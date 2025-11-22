@@ -1,0 +1,51 @@
+import os
+import json
+from dotenv import load_dotenv
+import requests
+
+
+def generate_semantic_mermaid_openrouter(
+    analysis_result: dict,
+    actors_detected=None,
+    diagram_level: str = "C1"
+):
+    load_dotenv()
+    api_key = os.getenv("OPENROUTER_API_KEY")
+
+    if not api_key:
+        return "⚠️ Error: no se encontró OPENROUTER_API_KEY en .env"
+
+    # Normalizar actores
+    if isinstance(actors_detected, dict):
+        actors = actors_detected.get("actors", [])
+        external_systems = actors_detected.get("external_systems", [])
+    else:
+        actors = actors_detected or []
+        external_systems = []
+
+    # Contexto compacto (evita saturar al modelo)
+    context = {
+        "project_name": analysis_result.get("project_name"),
+        "project_type": analysis_result.get("project_type"),
+        "containers": analysis_result.get("containers_detected", []),
+        "components": analysis_result.get("components_detected", []),
+        "relations": analysis_result.get("relations_detected", []),
+        "actors": actors,
+        "external_systems": external_systems,
+        "diagram_level": diagram_level
+    }
+
+    instructions = ""
+Eres un experto en arquitectura de software especializado en el modelo C4.
+
+Reglas obligatorias:
+- Si diagram_level = "C1": genera SOLO un C4Context.
+- Si diagram_level = "C2": genera SOLO un C4Container.
+- Si diagram_level = "C3": genera SOLO un C4Component.
+- PROHIBIDO mezclar niveles.
+- PROHIBIDO agregar explicaciones.
+- PROHIBIDO agregar texto fuera de Mermaid.
+- Delimita la salida así:
+
+```mermaid
+<diagrama>

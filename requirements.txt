@@ -1,0 +1,18 @@
+# Web Framework
+streamlit>=1.28.0
+streamlit-authenticator>=0.2.3
+
+# API (si usas FastAPI)
+fastapi
+uvicorn
+pydantic
+python-multipart
+
+# Core dependencies
+python-dotenv
+requests
+networkx>=3.0
+scipy
+
+# Opcional: visualización
+matplotlib

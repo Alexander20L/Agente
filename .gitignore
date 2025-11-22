@@ -1,0 +1,102 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment variables
+.env
+.env.local
+
+# Project specific
+uploads/
+output/
+logs/
+*.log
+
+# Test files and results
+test_*.py
+*_test_result.json
+*_test.json
+test_output.txt
+
+# Generated analysis files (keep only in local)
+analysis_*.json
+extended_test_summary.json
+multi_project_test_summary.json
+real_projects_test_summary.json
+
+# Generated diagrams (keep only examples)
+*_c1.mmd
+*_c2.mmd
+*_c3.mmd
+!examples/*_c1.mmd
+!examples/*_c2.mmd
+!examples/*_c3.mmd
+
+# Downloaded test projects
+test_project/
+test_projects/
+triton_test/
+spring-petclinic/
+simulator_resistance/
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Coverage
+.coverage
+htmlcov/
+.pytest_cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Database (NO subir base de datos local a GitHub)
+users.db
+*.sqlite
+*.sqlite3
+
+# Authentication legacy files
+config_users.yaml
+config_users.backup.yaml
+
+# Compiled files
+*.pyc
+
+# OS
+Thumbs.db
