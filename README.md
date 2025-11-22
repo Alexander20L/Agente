@@ -1,76 +1,130 @@
-# 🤖 Agente Inteligente C4 - Sistema de Análisis de Código
+# 🏗️ Analizador de Arquitectura C4
 
-Sistema académico y modular para análisis estático de proyectos con generación de diagramas C4 usando IA.
+Sistema inteligente de análisis de proyectos de software que genera automáticamente diagramas C4 (Context, Container, Component) con detección de módulos de negocio y autenticación de usuarios.
 
-## 📋 Arquitectura del Sistema
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-1.28+-red.svg)](https://streamlit.io/)
+[![License](https://img.shields.io/badge/License-Academic-green.svg)]()
 
-### Módulos Core (4 archivos principales)
+## 🎯 Características Principales
 
-```
-core/
-├── analyzer.py          # Análisis estático básico + detección de actores
-├── knowledge_graph.py   # Grafo de conocimiento + análisis de dependencias
-├── semantic_reasoner.py # Razonamiento con IA (OpenRouter)
-└── diagram_generator.py # Generación de diagramas Mermaid
-```
+### ✨ Análisis Inteligente
+- 🔍 **Detección de módulos de negocio** - Identifica automáticamente módulos funcionales (user, product, order, payment, etc.)
+- 📊 **Diagramas escalables** - Genera diagramas que escalan con el tamaño del proyecto (4-26 containers)
+- 🌐 **Soporte multilenguaje** - Java, Python, C++, C#, Go, Ruby, PHP, Rust, Kotlin, Swift, TypeScript
+- 📈 **Métricas avanzadas** - PageRank, betweenness centrality, análisis de dependencias
 
-### ✨ Características
+### 🔐 Sistema de Autenticación
+- 👤 **Login y Registro** - Sistema completo con validación
+- 🗄️ **Base de datos SQLite** - Compatible con despliegue en la nube
+- 🔒 **Contraseñas seguras** - Hasheadas con bcrypt
+- 🍪 **Sesión persistente** - Manejo de estado con Streamlit
 
-- ✅ **Análisis estático**: Detección de contenedores, componentes y dependencias
-- ✅ **Grafo de conocimiento**: Representación NetworkX con métricas avanzadas
-- ✅ **Detección de ciclos**: Identificación de dependencias circulares
-- ✅ **Métricas de calidad**: Acoplamiento, cohesión, complejidad ciclomática
-- ✅ **Recomendaciones**: Sugerencias automáticas basadas en análisis
-- ✅ **Diagramas C4**: Generación con IA (C1, C2, C3) en formato Mermaid
-- ✅ **API REST**: FastAPI con múltiples endpoints
+### 📊 Generación de Diagramas
+- **C1 (Context)** - Sistema en su contexto con actores externos
+- **C2 (Container)** - Arquitectura de contenedores basada en módulos de negocio
+- **C3 (Component)** - Componentes internos por capa arquitectónica
+- **Formato Mermaid** - Compatible con GitHub, GitLab, Notion, etc.
 
 ## 🚀 Instalación Rápida
 
-```powershell
-# 1. Instalar dependencias
+### Requisitos
+- Python 3.12+
+- Git
+
+### Pasos
+
+```bash
+# 1. Clonar repositorio
+git clone https://github.com/Alexander20L/Agente.git
+cd Agente
+
+# 2. Crear entorno virtual
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# 3. Instalar dependencias
 pip install -r requirements.txt
 
-# 2. Configurar API key (opcional, para IA)
-echo "OPENROUTER_API_KEY=tu_api_key" > .env
-
-# 3. Iniciar servidor
-uvicorn api.main:app --reload
+# 4. Ejecutar aplicación
+streamlit run app.py
 ```
 
-## 📡 Endpoints API
+La aplicación se abrirá en `http://localhost:8501`
 
-### `/analyze` - Análisis Completo con IA
-```bash
-POST http://localhost:8000/analyze
-```
-- Análisis estático básico
-- Detección de actores
-- Diagramas C1, C2, C3 con IA (OpenRouter)
+## 📖 Uso
 
-### `/analyze/advanced` - Análisis Avanzado con Grafo
-```bash
-POST http://localhost:8000/analyze/advanced
-```
-- Grafo de conocimiento completo
-- Análisis de código con regex
-- Métricas avanzadas
-- Diagramas desde el grafo
+### 1. **Iniciar Sesión**
+- Usuario demo: `admin` / `admin123`
+- O crear nueva cuenta en "Regístrate aquí"
 
-### `/analyze/dependencies` - Análisis de Dependencias
-```bash
-POST http://localhost:8000/analyze/dependencies
-```
-- Detección de ciclos
-- Métricas de acoplamiento
-- Recomendaciones arquitectónicas
+### 2. **Subir Proyecto**
+- Subir archivo `.zip` con tu proyecto
+- Soporta cualquier lenguaje de programación
 
-### `/analyze/metrics` - Métricas de Calidad
-```bash
-POST http://localhost:8000/analyze/metrics
+### 3. **Analizar**
+- El sistema detecta automáticamente:
+  - Módulos de negocio
+  - Dependencias
+  - Estructura arquitectónica
+  - Componentes principales
+
+### 4. **Visualizar Diagramas**
+- Ver diagramas C1, C2, C3 generados
+- Descargar archivos `.mmd` (Mermaid)
+- Copiar código para documentación
+
+## 🏗️ Arquitectura del Sistema
+
 ```
-- Complejidad ciclomática
-- Nodos críticos
-- Cuellos de botella
+agente/
+├── app.py                           # Aplicación principal Streamlit
+├── core/
+│   ├── analyzer.py                  # Análisis estático + detección módulos
+│   ├── diagram_generator_deterministic.py  # Generación diagramas C4
+│   ├── knowledge_graph.py           # Grafo de dependencias (NetworkX)
+│   └── semantic_reasoner.py         # Análisis semántico avanzado
+├── requirements.txt                 # Dependencias Python
+├── Procfile                         # Configuración Heroku/Railway
+├── runtime.txt                      # Versión Python
+└── .streamlit/
+    └── config.toml                  # Configuración Streamlit Cloud
+```
+
+## 🔧 Tecnologías Utilizadas
+
+### Backend
+- **Python 3.12** - Lenguaje principal
+- **NetworkX** - Análisis de grafos y métricas
+- **SQLite** - Base de datos de usuarios
+- **bcrypt** - Encriptación de contraseñas
+
+### Frontend
+- **Streamlit** - Framework web interactivo
+- **Mermaid** - Renderizado de diagramas
+
+### Deployment
+- **Streamlit Cloud** - Hosting recomendado
+- **Heroku / Railway** - Alternativas soportadas
+
+## 📊 Ejemplo de Resultados
+
+### Proyecto Pequeño (45 archivos)
+- **4 containers** detectados: GUI, Core, Data, Utils
+- **14 componentes** en C3
+- **Tiempo de análisis**: ~2 segundos
+
+### Proyecto Mediano (262 archivos - Spring PetClinic)
+- **7 containers** detectados: Owner, Vet, System, Model, etc.
+- **42 componentes** en C3
+- **Tiempo de análisis**: ~5 segundos
+
+### Proyecto Grande (1,399 archivos - Triton Compiler)
+- **26 containers** detectados: AMD, NVIDIA, HIP, Transforms, etc.
+- **67 módulos** identificados
+- **Tiempo de análisis**: ~15 segundos
+- **Mejora**: +766% más detalle vs. versión anterior
 
 ## 🧪 Ejemplo de Uso
 
