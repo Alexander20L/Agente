@@ -9,8 +9,8 @@ from pathlib import Path
 from typing import Dict, List, Optional
 from groq import Groq
 
-from .analyzer import ProjectAnalyzer
-from .diagram_generator_deterministic import DiagramGeneratorDeterministic
+from . import analyzer
+from . import diagram_generator_deterministic as deterministic
 from .distributed_detector import DistributedSystemDetector
 
 
@@ -24,8 +24,6 @@ class BusinessC4Generator:
     """
     
     def __init__(self):
-        self.static_analyzer = ProjectAnalyzer()
-        self.deterministic_gen = DiagramGeneratorDeterministic()
         self.distributed_detector = DistributedSystemDetector()
         
         # Initialize Groq client for AI analysis
@@ -64,7 +62,7 @@ Respond ONLY in valid JSON format."""
         3. Merge both to generate enriched diagrams
         """
         print("🔍 Fase 1: Análisis estático...")
-        static_analysis = self.static_analyzer.analyze_project(project_path)
+        static_analysis = analyzer.analyze_project(project_path)
         
         print("🏗️ Fase 2: Detección de arquitectura distribuida...")
         arch_info = self.distributed_detector.detect_architecture_type(project_path)
@@ -283,7 +281,7 @@ IMPORTANT:
         - Purpose from business context
         """
         # Get containers from static analysis
-        containers = self.deterministic_gen._detect_containers(static)
+        containers = deterministic._detect_containers(static)
         
         mermaid = "graph TB\n"
         
