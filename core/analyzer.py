@@ -345,6 +345,20 @@ def detect_project_type(analysis_result: dict) -> str:
     has_pyproject = "pyproject.toml" in basenames
     has_app_entry = any(x in basenames for x in ["app.py", "main.py", "server.py", "manage.py"])
     
+    # === ODOO/OPENERP DETECTION (Web Framework, not CLI) ===
+    # Odoo indicators: odoo-bin, openerp-server, odoo/ directory
+    odoo_indicators = ["odoo-bin", "openerp-server", "odoo-gevent"]
+    has_odoo_bin = any(f in basenames for f in odoo_indicators)
+    has_odoo_dir = any("odoo" in d.lower() for root, dirs, _ in os.walk(project_path) for d in dirs)
+    
+    if has_odoo_bin or (has_odoo_dir and "addons" in [d.lower() for root, dirs, _ in os.walk(project_path) for d in dirs]):
+        # Verify it's Odoo by checking for http.py or models.py in odoo/ directory
+        for root, dirs, files in os.walk(project_path):
+            if "odoo" in os.path.basename(root).lower():
+                odoo_files = [f.lower() for f in files]
+                if "http.py" in odoo_files or "models.py" in odoo_files or "api.py" in odoo_files:
+                    return "web-framework"  # Odoo is a web framework (HTTP server)
+    
     # Python web frameworks detection
     if has_setup or has_pyproject:
         for root, dirs, files in os.walk(project_path):
@@ -1732,6 +1746,21 @@ def detect_components(root_path: str):
                 if pat.match(file_lower):
                     comp_type = t
                     break
+            
+            # 1.5) Odoo/OpenERP specific components (override patterns)
+            if "odoo" in root_path.lower():
+                if file_lower == "api.py":
+                    comp_type = "utility"  # Decoradores, no controller
+                elif file_lower == "fields.py":
+                    comp_type = "utility"  # Definiciones de tipos ORM
+                elif file_lower == "sql_db.py":
+                    comp_type = "repository"  # Abstracción de BD
+                elif file_lower == "http.py":
+                    comp_type = "controller"  # Maneja HTTP requests
+                elif file_lower == "models.py":
+                    comp_type = "model"  # Modelo base ORM
+                elif file_lower in ["exceptions.py", "loglevels.py"]:
+                    comp_type = "utility"  # Utilities, not services
 
             content = _read_text(file_path)
 
@@ -1777,6 +1806,15 @@ def detect_components(root_path: str):
                 ):
                     comp_type = "repository"
                 
+                # Active Record pattern (Odoo, Rails) - Models with embedded logic
+                elif re.search(
+                    r"class.*\(models\.Model\)|class.*\(AbstractModel\)|"
+                    r"_name\s*=\s*['\"]|_inherit\s*=\s*['\"]|"
+                    r"@api\.model|@api\.depends",
+                    content, re.IGNORECASE
+                ):
+                    comp_type = "model"  # Active Record: model with business logic
+                
                 # Models/Entities (Java, C#, Python, PHP, Ruby)
                 elif re.search(
                     r"@Entity|@Table|@Document|@Model|"
@@ -1787,6 +1825,15 @@ def detect_components(root_path: str):
                     content, re.IGNORECASE
                 ):
                     comp_type = "model"
+                
+                # Active Record pattern (Odoo, Rails) - Models with business logic
+                elif re.search(
+                    r"class.*\(models\.Model\)|class.*\(AbstractModel\)|"
+                    r"_name\s*=\s*['\"]|_inherit\s*=\s*['\"]|"
+                    r"@api\.model|@api\.depends|@api\.constrains",
+                    content, re.IGNORECASE
+                ):
+                    comp_type = "model"  # Active Record: model + business logic
             
             # 4) Si todavía no tiene tipo, detectar por keywords de lenguaje
             if not comp_type:
@@ -1990,12 +2037,23 @@ def detect_components(root_path: str):
                     relations.append({"from": match.group(1), "to": match.group(2), "type": "inheritance"})
 
             if comp_type:
+                # Detect architectural pattern metadata
+                pattern = None
+                if comp_type == "model":
+                    if "models.Model" in content or "@api.model" in content:
+                        pattern = "Active Record"  # Odoo/Rails: logic in model
+                    elif "@Entity" in content or "declarative_base" in content:
+                        pattern = "ORM Entity"  # Traditional ORM
+                elif comp_type == "repository":
+                    pattern = "Repository Pattern"
+                
                 components.append({
                     "type": comp_type,
                     "name": file,
                     "path": file_path,
                     "classes": classes[:6],
-                    "entry_points": mains[:4]
+                    "entry_points": mains[:4],
+                    "pattern": pattern  # Add architectural pattern info
                 })
 
     # de-dups

@@ -49,6 +49,19 @@ def _detect_main_application(project_type, technologies, components, analysis):
     component_count = len(components)
     business_modules = analysis.get("business_modules", [])
     
+    # Web Framework (e.g., Odoo, Django, FastAPI framework itself)
+    if project_type == "web-framework":
+        framework_name = "Web Application"
+        if "odoo" in analysis.get("project_name", "").lower():
+            framework_name = "Web Application Server"
+        
+        return {
+            "id": "web_app",
+            "name": framework_name,
+            "technology": all_tech or "Python + HTTP Server",
+            "description": f"Servidor web con {component_count} componentes | Arquitectura modular"
+        }
+    
     # GUI Application (Desktop)
     if project_type == "gui-application" or any(gui in all_tech for gui in ["PyQt", "Tkinter", "JavaFX", "Swing", "WPF", "WinForms", "Electron"]):
         tech = next((t for t in ["PyQt5", "PyQt6", "Tkinter", "JavaFX", "Swing", "WPF", "WinForms", "Electron"] if t in all_tech), "GUI Framework")
@@ -228,6 +241,7 @@ def generate_c1_diagram(analysis):
     is_mobile_app = project_type == "mobile-app"
     is_compiler = project_type == "compiler"
     is_cli_tool = project_type == "cli-tool"
+    is_web_framework = project_type == "web-framework"
     
     diagram = f"""---
 title: Sistema {project_name} - Diagrama C1 (Contexto)
@@ -296,9 +310,15 @@ C4Context
             diagram += f"""    Rel(user, system, "Usa", "Mobile App")
 """
         elif is_compiler or is_cli_tool:
+            # CLI tools and compilers use command line (NOT web browsers)
             diagram += f"""    Rel(user, system, "Ejecuta via", "Command Line/Terminal")
 """
+        elif is_web_framework or project_type in ["api-backend", "microservice"]:
+            # Web frameworks, APIs, and microservices use HTTPS (NOT command line)
+            diagram += f"""    Rel(user, system, "Usa", "Web Browser/HTTPS")
+"""
         else:
+            # Default: assume web-based if not explicitly CLI/compiler
             diagram += f"""    Rel(user, system, "Usa", "Web Browser/HTTPS")
 """
     
