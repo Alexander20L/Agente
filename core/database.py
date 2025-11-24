@@ -81,39 +81,44 @@ class Database:
         cursor.close()
         conn.commit()
         
-        # Crear usuario admin si no existe
-        self._create_default_admin(conn)
+        # Crear usuario admin si no existe (con nueva conexión)
+        self._create_default_admin()
         
-        conn.commit()
         self.close()
     
-    def _create_default_admin(self, conn):
+    def _create_default_admin(self):
         """Crea el usuario admin por defecto si no existe"""
-        cursor = conn.cursor()
-        
         # Verificar si existe admin
         if self.use_postgres:
-            cursor.execute('SELECT username FROM users WHERE username = %s', ('admin',))
+            query = 'SELECT username FROM users WHERE username = %s'
         else:
-            cursor.execute('SELECT username FROM users WHERE username = ?', ('admin',))
+            query = 'SELECT username FROM users WHERE username = ?'
+        
+        cursor, conn = self.execute(query, ('admin',))
         
         if not cursor.fetchone():
+            cursor.close()
+            
             hashed_password = bcrypt.hashpw('admin123'.encode(), bcrypt.gensalt()).decode()
             
             if self.use_postgres:
-                cursor.execute('''
+                insert_query = '''
                     INSERT INTO users (username, password, name, email)
                     VALUES (%s, %s, %s, %s)
-                ''', ('admin', hashed_password, 'Administrador', 'admin@example.com'))
+                '''
             else:
-                cursor.execute('''
+                insert_query = '''
                     INSERT INTO users (username, password, name, email)
                     VALUES (?, ?, ?, ?)
-                ''', ('admin', hashed_password, 'Administrador', 'admin@example.com'))
+                '''
             
+            cursor, conn = self.execute(insert_query, ('admin', hashed_password, 'Administrador', 'admin@example.com'))
+            cursor.close()
             conn.commit()
-        
-        cursor.close()
+            self.close()
+        else:
+            cursor.close()
+            self.close()
     
     def get_user(self, username):
         """Obtiene un usuario por username"""
