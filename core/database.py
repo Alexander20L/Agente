@@ -78,12 +78,13 @@ class Database:
             '''
         
         cursor, conn = self.execute(create_table_query)
+        cursor.close()
         conn.commit()
         
         # Crear usuario admin si no existe
         self._create_default_admin(conn)
         
-        cursor.close()
+        conn.commit()
         self.close()
     
     def _create_default_admin(self, conn):
