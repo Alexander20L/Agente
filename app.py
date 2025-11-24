@@ -244,6 +244,17 @@ with st.sidebar:
 # Main content
 col1, col2 = st.columns([1, 1])
 
+# Definir use_business_ai ANTES de usar en col1
+if os.getenv('GROQ_API_KEY'):
+    use_business_ai = st.checkbox(
+        "🤖 Usar análisis de contexto de negocio con IA",
+        value=True,
+        help="Enriquece diagramas con terminología de negocio del README y código (Groq Llama 3.1)"
+    )
+else:
+    use_business_ai = False
+    st.info("💡 Configura GROQ_API_KEY en Secrets para habilitar análisis IA")
+
 with col1:
     st.header("📦 Subir Proyecto")
     
@@ -279,7 +290,7 @@ with col1:
                             try:
                                 with st.spinner("🤖 Extrayendo contexto de negocio con IA..."):
                                     business_gen = BusinessC4Generator()
-                                    enriched_result = business_gen.generate_business_c4(temp_dir)
+                                    enriched_result = business_gen.generate_business_c4(analysis['project_path'])
                                     
                                     # Merge análisis estático + contexto de negocio
                                     analysis['business_context'] = enriched_result['business_context']
@@ -305,17 +316,6 @@ with col1:
 
 with col2:
     st.header("📊 Información del Proyecto")
-    
-    # Toggle para análisis de negocio IA
-    if os.getenv('GROQ_API_KEY'):
-        use_business_ai = st.checkbox(
-            "🤖 Usar análisis de contexto de negocio con IA",
-            value=True,
-            help="Enriquece diagramas con terminología de negocio del README y código (Groq Llama 3.1)"
-        )
-    else:
-        use_business_ai = False
-        st.info("💡 Configura GROQ_API_KEY en Secrets para habilitar análisis IA")
     
     if 'analysis' in st.session_state:
         analysis = st.session_state['analysis']
