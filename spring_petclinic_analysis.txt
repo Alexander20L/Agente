@@ -1,0 +1,46 @@
+======================================================================
+ANÁLISIS DE SPRING PETCLINIC
+======================================================================
+
+Proyecto: spring-petclinic
+Tipo: api-backend
+Contenedores: 5
+Componentes: 39
+Relaciones: 337
+
+CONTENEDORES:
+  - service: container (Docker)
+  - database: SQL
+  - database: SQL
+  - database: SQL
+  - database: SQL
+
+COMPONENTES (Top 20):
+  - PetClinicApplication.java (service)
+  - PetClinicRuntimeHints.java (service)
+  - BaseEntity.java (model)
+  - NamedEntity.java (model)
+  - Person.java (model)
+  - Owner.java (repository)
+  - OwnerController.java (controller)
+  - OwnerRepository.java (repository)
+  - Pet.java (repository)
+  - PetController.java (controller)
+  - PetType.java (repository)
+  - PetTypeFormatter.java (view)
+  - PetTypeRepository.java (repository)
+  - PetValidator.java (service)
+  - Visit.java (repository)
+  - VisitController.java (controller)
+  - CrashController.java (controller)
+  - WebConfiguration.java (service)
+  - WelcomeController.java (controller)
+  - Specialty.java (repository)
+
+ANOTACIONES SPRING:
+  - @SpringBootApplication: 2
+  - @Controller: 6
+  - @Service: 2
+  - @Entity: 6
+  - @GetMapping: 6
+  - @PostMapping: 3

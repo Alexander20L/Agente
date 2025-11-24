@@ -1,0 +1,25 @@
+---
+title: Sistema test_project - Diagrama C2 (Contenedores)
+---
+C4Container
+    title Diagrama de Contenedores - test_project
+
+    Person(user, "Usuario", "Usuario del sistema")
+    
+    Container_Boundary(system, "test_project") {
+        Container(widgets_gui, "Widgets GUI", "PyQt5", "11 componentes")
+        Container(core_core, "Core Core", "PyQt5", "3 componentes")
+        Container(data_module, "Data Module", "PyQt5", "2 componentes")
+        Container(utils_utils, "Utils Utils", "PyQt5", "2 componentes")
+    }
+    
+    ContainerDb(database, "Base de Datos", "SQL", "Almacena entidades del dominio")
+    
+    Rel(user, widgets_gui, "Usa", "HTTP/REST")
+    Rel(user, core_core, "Usa", "HTTP/REST")
+    Rel(user, data_module, "Usa", "HTTP/REST")
+    Rel(user, utils_utils, "Usa", "HTTP/REST")
+    Rel(widgets_gui, database, "Lee/Escribe", "SQL")
+    Rel(core_core, database, "Lee/Escribe", "SQL")
+    Rel(data_module, database, "Lee/Escribe", "SQL")
+    Rel(utils_utils, database, "Lee/Escribe", "SQL")

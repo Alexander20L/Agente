@@ -1,0 +1,1943 @@
+{
+  "project_path": "uploads/echo-master\\echo-master",
+  "project_name": "echo-master",
+  "total_files": 104,
+  "containers_detected": [
+    {
+      "type": "backend",
+      "technology": "Go",
+      "path": "uploads/echo-master\\echo-master",
+      "source": "content",
+      "evidences": [
+        "Go module",
+        "HTTP server"
+      ],
+      "score": 0.7,
+      "confidence": "medium"
+    }
+  ],
+  "components_detected": [
+    {
+      "type": "service",
+      "name": "bind.go",
+      "path": "uploads/echo-master\\echo-master\\bind.go",
+      "classes": [
+        "DefaultBinder"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "binder.go",
+      "path": "uploads/echo-master\\echo-master\\binder.go",
+      "classes": [
+        "BindingError",
+        "ValueBinder"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "binder_external_test.go",
+      "path": "uploads/echo-master\\echo-master\\binder_external_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "binder_test.go",
+      "path": "uploads/echo-master\\echo-master\\binder_test.go",
+      "classes": [
+        "target",
+        "target",
+        "Opts",
+        "Opts",
+        "Opts",
+        "Opts"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "bind_test.go",
+      "path": "uploads/echo-master\\echo-master\\bind_test.go",
+      "classes": [
+        "bindTestStruct",
+        "bindTestStructWithTags",
+        "Struct",
+        "Bar",
+        "Root",
+        "foo"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "context.go",
+      "path": "uploads/echo-master\\echo-master\\context.go",
+      "classes": [
+        "context"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "context_fs.go",
+      "path": "uploads/echo-master\\echo-master\\context_fs.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "context_fs_test.go",
+      "path": "uploads/echo-master\\echo-master\\context_fs_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "context_test.go",
+      "path": "uploads/echo-master\\echo-master\\context_test.go",
+      "classes": [
+        "Template",
+        "responseWriterErr",
+        "validator"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "echo.go",
+      "path": "uploads/echo-master\\echo-master\\echo.go",
+      "classes": [
+        "Echo",
+        "Route",
+        "HTTPError",
+        "common",
+        "tcpKeepAliveListener"
+      ],
+      "entry_points": [
+        "main"
+      ]
+    },
+    {
+      "type": "controller",
+      "name": "echo_fs.go",
+      "path": "uploads/echo-master\\echo-master\\echo_fs.go",
+      "classes": [
+        "filesystem",
+        "defaultFS"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "echo_fs_test.go",
+      "path": "uploads/echo-master\\echo-master\\echo_fs_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "echo_test.go",
+      "path": "uploads/echo-master\\echo-master\\echo_test.go",
+      "classes": [
+        "user",
+        "customError",
+        "rr"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "group.go",
+      "path": "uploads/echo-master\\echo-master\\group.go",
+      "classes": [
+        "Group"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "group_fs.go",
+      "path": "uploads/echo-master\\echo-master\\group_fs.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "group_fs_test.go",
+      "path": "uploads/echo-master\\echo-master\\group_fs_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "group_test.go",
+      "path": "uploads/echo-master\\echo-master\\group_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "ip.go",
+      "path": "uploads/echo-master\\echo-master\\ip.go",
+      "classes": [
+        "ipChecker"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "ip_test.go",
+      "path": "uploads/echo-master\\echo-master\\ip_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "json.go",
+      "path": "uploads/echo-master\\echo-master\\json.go",
+      "classes": [
+        "DefaultJSONSerializer"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "json_test.go",
+      "path": "uploads/echo-master\\echo-master\\json_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "log.go",
+      "path": "uploads/echo-master\\echo-master\\log.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "renderer.go",
+      "path": "uploads/echo-master\\echo-master\\renderer.go",
+      "classes": [
+        "TemplateRenderer"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "renderer_test.go",
+      "path": "uploads/echo-master\\echo-master\\renderer_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "response.go",
+      "path": "uploads/echo-master\\echo-master\\response.go",
+      "classes": [
+        "Response"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "response_test.go",
+      "path": "uploads/echo-master\\echo-master\\response_test.go",
+      "classes": [
+        "testResponseWriter"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "router.go",
+      "path": "uploads/echo-master\\echo-master\\router.go",
+      "classes": [
+        "Router",
+        "node",
+        "routeMethod",
+        "routeMethods"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "router_test.go",
+      "path": "uploads/echo-master\\echo-master\\router_test.go",
+      "classes": [
+        "rr"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "basic_auth.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\basic_auth.go",
+      "classes": [
+        "BasicAuthConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "basic_auth_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\basic_auth_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "body_dump.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\body_dump.go",
+      "classes": [
+        "BodyDumpConfig",
+        "bodyDumpResponseWriter"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "body_dump_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\body_dump_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "body_limit.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\body_limit.go",
+      "classes": [
+        "BodyLimitConfig",
+        "limitedReader"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "body_limit_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\body_limit_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "compress.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\compress.go",
+      "classes": [
+        "GzipConfig",
+        "gzipResponseWriter"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "compress_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\compress_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "context_timeout.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\context_timeout.go",
+      "classes": [
+        "ContextTimeoutConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "context_timeout_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\context_timeout_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "cors.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\cors.go",
+      "classes": [
+        "CORSConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "cors_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\cors_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "csrf.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\csrf.go",
+      "classes": [
+        "CSRFConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "csrf_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\csrf_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "decompress.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\decompress.go",
+      "classes": [
+        "DecompressConfig",
+        "DefaultGzipDecompressPool"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "decompress_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\decompress_test.go",
+      "classes": [
+        "TestDecompressPoolWithError"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "extractor.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\extractor.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "extractor_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\extractor_test.go",
+      "classes": [
+        "pathParam"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "key_auth.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\key_auth.go",
+      "classes": [
+        "KeyAuthConfig",
+        "ErrKeyAuthMissing"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "key_auth_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\key_auth_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "logger.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\logger.go",
+      "classes": [
+        "LoggerConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "logger_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\logger_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "method_override.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\method_override.go",
+      "classes": [
+        "MethodOverrideConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "method_override_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\method_override_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "middleware.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\middleware.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "middleware_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\middleware_test.go",
+      "classes": [
+        "testResponseWriterNoFlushHijack",
+        "testResponseWriterUnwrapper",
+        "testResponseWriterUnwrapperHijack"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "proxy.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\proxy.go",
+      "classes": [
+        "ProxyConfig",
+        "ProxyTarget",
+        "commonBalancer",
+        "randomBalancer",
+        "roundRobinBalancer"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "proxy_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\proxy_test.go",
+      "classes": [
+        "testProvider",
+        "customBalancer"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "rate_limiter.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\rate_limiter.go",
+      "classes": [
+        "RateLimiterConfig",
+        "RateLimiterMemoryStore",
+        "Visitor",
+        "RateLimiterMemoryStoreConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "rate_limiter_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\rate_limiter_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "recover.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\recover.go",
+      "classes": [
+        "RecoverConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "recover_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\recover_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "redirect.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\redirect.go",
+      "classes": [
+        "RedirectConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "redirect_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\redirect_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "request_id.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\request_id.go",
+      "classes": [
+        "RequestIDConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "request_id_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\request_id_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "request_logger.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\request_logger.go",
+      "classes": [
+        "RequestLoggerConfig",
+        "RequestLoggerValues"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "request_logger_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\request_logger_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "rewrite.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\rewrite.go",
+      "classes": [
+        "RewriteConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "rewrite_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\rewrite_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "secure.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\secure.go",
+      "classes": [
+        "SecureConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "secure_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\secure_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "slash.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\slash.go",
+      "classes": [
+        "TrailingSlashConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "slash_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\slash_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "static.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\static.go",
+      "classes": [
+        "StaticConfig"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "static_other.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\static_other.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "static_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\static_test.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "view",
+      "name": "static_windows.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\static_windows.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "timeout.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\timeout.go",
+      "classes": [
+        "TimeoutConfig",
+        "echoHandlerFuncWrapper",
+        "ignorableWriter"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "timeout_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\timeout_test.go",
+      "classes": [
+        "coroutineSafeBuffer"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "util.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\util.go",
+      "classes": [],
+      "entry_points": []
+    },
+    {
+      "type": "service",
+      "name": "util_test.go",
+      "path": "uploads/echo-master\\echo-master\\middleware\\util_test.go",
+      "classes": [],
+      "entry_points": []
+    }
+  ],
+  "relations_detected": [
+    {
+      "from": "context_timeout.go",
+      "to": "context"
+    },
+    {
+      "from": "MethodOverrideConfig",
+      "to": "r"
+    },
+    {
+      "from": "BasicAuthConfig",
+      "to": "g"
+    },
+    {
+      "from": "context_fs_test.go",
+      "to": "github.com/stretchr/testify/assert"
+    },
+    {
+      "from": "StaticConfig",
+      "to": "d"
+    },
+    {
+      "from": "randomBalancer",
+      "to": "d"
+    },
+    {
+      "from": "testProvider",
+      "to": "r"
+    },
+    {
+      "from": "Visitor",
+      "to": "e"
+    },
+    {
+      "from": "key_auth.go",
+      "to": "errors"
+    },
+    {
+      "from": "SecureConfig",
+      "to": "t"
+    },
+    {
+      "from": "TimeoutConfig",
+      "to": "n"
+    },
+    {
+      "from": "cors_test.go",
+      "to": "errors"
+    },
+    {
+      "from": "context",
+      "to": "g"
+    },
+    {
+      "from": "node",
+      "to": "l"
+    },
+    {
+      "from": "response.go",
+      "to": "bufio"
+    },
+    {
+      "from": "ip_test.go",
+      "to": "net"
+    },
+    {
+      "from": "RedirectConfig",
+      "to": "r"
+    },
+    {
+      "from": "customBalancer",
+      "to": "t"
+    },
+    {
+      "from": "key_auth_test.go",
+      "to": "errors"
+    },
+    {
+      "from": "echo_fs_test.go",
+      "to": "github.com/stretchr/testify/assert"
+    },
+    {
+      "from": "RateLimiterMemoryStoreConfig",
+      "to": "p"
+    },
+    {
+      "from": "KeyAuthConfig",
+      "to": "l"
+    },
+    {
+      "from": "coroutineSafeBuffer",
+      "to": "x"
+    },
+    {
+      "from": "rr",
+      "to": "c"
+    },
+    {
+      "from": "Response",
+      "to": "l"
+    },
+    {
+      "from": "basic_auth.go",
+      "to": "encoding/base64"
+    },
+    {
+      "from": "TrailingSlashConfig",
+      "to": "r"
+    },
+    {
+      "from": "defaultFS",
+      "to": "g"
+    },
+    {
+      "from": "Template",
+      "to": "e"
+    },
+    {
+      "from": "context_timeout_test.go",
+      "to": "context"
+    },
+    {
+      "from": "json.go",
+      "to": "encoding/json"
+    },
+    {
+      "from": "rr",
+      "to": "g"
+    },
+    {
+      "from": "group_fs_test.go",
+      "to": "github.com/stretchr/testify/assert"
+    },
+    {
+      "from": "method_override_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "CSRFConfig",
+      "to": "r"
+    },
+    {
+      "from": "decompress_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "Group",
+      "to": "c"
+    },
+    {
+      "from": "Opts",
+      "to": "4"
+    },
+    {
+      "from": "logger_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "body_limit_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "rate_limiter_test.go",
+      "to": "errors"
+    },
+    {
+      "from": "ValueBinder",
+      "to": "e"
+    },
+    {
+      "from": "renderer_test.go",
+      "to": "github.com/stretchr/testify/assert"
+    },
+    {
+      "from": "limitedReader",
+      "to": "4"
+    },
+    {
+      "from": "timeout_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "router.go",
+      "to": "bytes"
+    },
+    {
+      "from": "decompress.go",
+      "to": "compress/gzip"
+    },
+    {
+      "from": "RateLimiterMemoryStore",
+      "to": "e"
+    },
+    {
+      "from": "bindTestStruct",
+      "to": "y"
+    },
+    {
+      "from": "body_dump_test.go",
+      "to": "errors"
+    },
+    {
+      "from": "ignorableWriter",
+      "to": "l"
+    },
+    {
+      "from": "util.go",
+      "to": "bufio"
+    },
+    {
+      "from": "context_fs.go",
+      "to": "errors"
+    },
+    {
+      "from": "request_logger.go",
+      "to": "errors"
+    },
+    {
+      "from": "TemplateRenderer",
+      "to": "r"
+    },
+    {
+      "from": "json_test.go",
+      "to": "github.com/stretchr/testify/assert"
+    },
+    {
+      "from": "log.go",
+      "to": "github.com/labstack/gommon/log"
+    },
+    {
+      "from": "proxy.go",
+      "to": "context"
+    },
+    {
+      "from": "bodyDumpResponseWriter",
+      "to": "r"
+    },
+    {
+      "from": "commonBalancer",
+      "to": "x"
+    },
+    {
+      "from": "binder_test.go",
+      "to": "encoding/json"
+    },
+    {
+      "from": "CORSConfig",
+      "to": "l"
+    },
+    {
+      "from": "bindTestStructWithTags",
+      "to": "g"
+    },
+    {
+      "from": "extractor_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "RequestLoggerConfig",
+      "to": "e"
+    },
+    {
+      "from": "routeMethods",
+      "to": "g"
+    },
+    {
+      "from": "roundRobinBalancer",
+      "to": "t"
+    },
+    {
+      "from": "BindingError",
+      "to": "r"
+    },
+    {
+      "from": "binder_external_test.go",
+      "to": "encoding/base64"
+    },
+    {
+      "from": "testResponseWriterUnwrapper",
+      "to": "r"
+    },
+    {
+      "from": "Router",
+      "to": "o"
+    },
+    {
+      "from": "binder.go",
+      "to": "encoding"
+    },
+    {
+      "from": "context_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "target",
+      "to": "s"
+    },
+    {
+      "from": "ipChecker",
+      "to": "l"
+    },
+    {
+      "from": "body_dump.go",
+      "to": "bufio"
+    },
+    {
+      "from": "filesystem",
+      "to": "S"
+    },
+    {
+      "from": "request_id.go",
+      "to": "github.com/labstack/echo/v4"
+    },
+    {
+      "from": "csrf.go",
+      "to": "crypto/subtle"
+    },
+    {
+      "from": "gzipResponseWriter",
+      "to": "t"
+    },
+    {
+      "from": "Opts",
+      "to": "g"
+    },
+    {
+      "from": "RewriteConfig",
+      "to": "s"
+    },
+    {
+      "from": "bind_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "request_logger_test.go",
+      "to": "github.com/labstack/echo/v4"
+    },
+    {
+      "from": "testFormFile",
+      "to": "e"
+    },
+    {
+      "from": "BodyLimitConfig",
+      "to": "4"
+    },
+    {
+      "from": "basic_auth_test.go",
+      "to": "encoding/base64"
+    },
+    {
+      "from": "BodyDumpConfig",
+      "to": "r"
+    },
+    {
+      "from": "Struct",
+      "to": "g"
+    },
+    {
+      "from": "ErrKeyAuthMissing",
+      "to": "r"
+    },
+    {
+      "from": "bind.go",
+      "to": "encoding"
+    },
+    {
+      "from": "Root",
+      "to": "4"
+    },
+    {
+      "from": "proxy_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "recover_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "timeout.go",
+      "to": "context"
+    },
+    {
+      "from": "ContextTimeoutConfig",
+      "to": "n"
+    },
+    {
+      "from": "unixTimestampLast",
+      "to": "e"
+    },
+    {
+      "from": "RequestLoggerValues",
+      "to": "g"
+    },
+    {
+      "from": "routeMethod",
+      "to": "g"
+    },
+    {
+      "from": "RequestIDConfig",
+      "to": "g"
+    },
+    {
+      "from": "extractor.go",
+      "to": "errors"
+    },
+    {
+      "from": "unixTimestamp",
+      "to": "e"
+    },
+    {
+      "from": "compress_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "ip.go",
+      "to": "net"
+    },
+    {
+      "from": "context.go",
+      "to": "bytes"
+    },
+    {
+      "from": "rewrite.go",
+      "to": "regexp"
+    },
+    {
+      "from": "middleware_test.go",
+      "to": "bufio"
+    },
+    {
+      "from": "static.go",
+      "to": "errors"
+    },
+    {
+      "from": "HTTPError",
+      "to": "y"
+    },
+    {
+      "from": "tcpKeepAliveListener",
+      "to": "r"
+    },
+    {
+      "from": "testResponseWriterUnwrapperHijack",
+      "to": "r"
+    },
+    {
+      "from": "RecoverConfig",
+      "to": "c"
+    },
+    {
+      "from": "GzipConfig",
+      "to": "t"
+    },
+    {
+      "from": "logger.go",
+      "to": "bytes"
+    },
+    {
+      "from": "foo",
+      "to": "r"
+    },
+    {
+      "from": "pathParam",
+      "to": "g"
+    },
+    {
+      "from": "echoHandlerFuncWrapper",
+      "to": "r"
+    },
+    {
+      "from": "TestStruct",
+      "to": "g"
+    },
+    {
+      "from": "compress.go",
+      "to": "bufio"
+    },
+    {
+      "from": "DecompressConfig",
+      "to": "r"
+    },
+    {
+      "from": "ProxyConfig",
+      "to": "r"
+    },
+    {
+      "from": "RateLimiterConfig",
+      "to": "r"
+    },
+    {
+      "from": "ProxyTarget",
+      "to": "p"
+    },
+    {
+      "from": "customError",
+      "to": "g"
+    },
+    {
+      "from": "echo_test.go",
+      "to": "bytes"
+    },
+    {
+      "from": "slash.go",
+      "to": "strings"
+    },
+    {
+      "from": "Echo",
+      "to": "l"
+    },
+    {
+      "from": "target",
+      "to": "t"
+    }
+  ],
+  "dockerfiles_found": 0,
+  "infra_detected": [
+    {
+      "type": "ci",
+      "tool": "pipelines",
+      "path": "uploads/echo-master\\echo-master"
+    }
+  ],
+  "project_type": "web-framework",
+  "architectural_layers": {
+    "presentation": {
+      "count": 66,
+      "components": [
+        "binder.go",
+        "binder_external_test.go",
+        "bind_test.go",
+        "context.go",
+        "context_fs.go",
+        "context_test.go",
+        "echo.go",
+        "echo_fs.go",
+        "echo_test.go",
+        "group.go"
+      ]
+    },
+    "application": {
+      "count": 14,
+      "components": [
+        "bind.go",
+        "binder_test.go",
+        "context_fs_test.go",
+        "echo_fs_test.go",
+        "group_fs_test.go",
+        "ip_test.go",
+        "json.go",
+        "json_test.go",
+        "log.go",
+        "renderer_test.go"
+      ]
+    },
+    "domain": {
+      "count": 0,
+      "components": []
+    },
+    "infrastructure": {
+      "count": 0,
+      "components": []
+    }
+  },
+  "technologies": {
+    "backend": [],
+    "frontend": [],
+    "database": [],
+    "infrastructure": [
+      "Go"
+    ]
+  },
+  "data_flows": {
+    "total_relations": 128,
+    "hubs": [
+      {
+        "component": "r",
+        "connections": 18,
+        "type": "sink"
+      },
+      {
+        "component": "bytes",
+        "connections": 15,
+        "type": "sink"
+      },
+      {
+        "component": "g",
+        "connections": 14,
+        "type": "sink"
+      },
+      {
+        "component": "errors",
+        "connections": 9,
+        "type": "sink"
+      },
+      {
+        "component": "e",
+        "connections": 8,
+        "type": "sink"
+      }
+    ],
+    "highly_connected_components": 13
+  },
+  "architecture_patterns": [],
+  "system_responsibilities": [
+    "Gestiona 66 endpoints/vistas"
+  ],
+  "knowledge_graph": "<core.knowledge_graph.KnowledgeGraph object at 0x00000249B2B5ECF0>",
+  "graph_metrics": {
+    "total_nodes": 181,
+    "total_edges": 128,
+    "num_communities": 55,
+    "important_components": [
+      {
+        "node": "r",
+        "score": 0.05617485001402623
+      },
+      {
+        "node": "g",
+        "score": 0.05149060677473499
+      },
+      {
+        "node": "bytes",
+        "score": 0.04738684143733237
+      },
+      {
+        "node": "errors",
+        "score": 0.029810824283944673
+      },
+      {
+        "node": "e",
+        "score": 0.02688148809171339
+      },
+      {
+        "node": "l",
+        "score": 0.023952151899482105
+      },
+      {
+        "node": "t",
+        "score": 0.01955814761113518
+      },
+      {
+        "node": "github.com/stretchr/testify/assert",
+        "score": 0.018093479515019537
+      },
+      {
+        "node": "bufio",
+        "score": 0.018093479515019537
+      },
+      {
+        "node": "context",
+        "score": 0.01516414332278825
+      }
+    ],
+    "bottleneck_components": [
+      {
+        "node": "context",
+        "score": 0.00012414649286157667
+      },
+      {
+        "node": "bind.go",
+        "score": 0.0
+      },
+      {
+        "node": "binder.go",
+        "score": 0.0
+      },
+      {
+        "node": "binder_external_test.go",
+        "score": 0.0
+      },
+      {
+        "node": "binder_test.go",
+        "score": 0.0
+      }
+    ],
+    "hub_components": [
+      {
+        "node": "r",
+        "connections": 18
+      },
+      {
+        "node": "bytes",
+        "connections": 15
+      },
+      {
+        "node": "g",
+        "connections": 14
+      },
+      {
+        "node": "errors",
+        "connections": 9
+      },
+      {
+        "node": "e",
+        "connections": 8
+      },
+      {
+        "node": "l",
+        "connections": 7
+      },
+      {
+        "node": "t",
+        "connections": 6
+      },
+      {
+        "node": "context",
+        "connections": 5
+      },
+      {
+        "node": "github.com/stretchr/testify/assert",
+        "connections": 5
+      },
+      {
+        "node": "bufio",
+        "connections": 5
+      }
+    ],
+    "communities": [
+      {
+        "id": 0,
+        "components": [
+          "basic_auth_test.go",
+          "basic_auth.go",
+          "encoding/base64",
+          "binder_external_test.go"
+        ],
+        "size": 4
+      },
+      {
+        "id": 1,
+        "components": [
+          "echo.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 2,
+        "components": [
+          "echo_fs.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 3,
+        "components": [
+          "group.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 4,
+        "components": [
+          "group_fs.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 5,
+        "components": [
+          "group_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 6,
+        "components": [
+          "ip_test.go",
+          "net",
+          "ip.go"
+        ],
+        "size": 3
+      },
+      {
+        "id": 7,
+        "components": [
+          "renderer.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 8,
+        "components": [
+          "response_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 9,
+        "components": [
+          "router_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 10,
+        "components": [
+          "body_limit.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 11,
+        "components": [
+          "cors.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 12,
+        "components": [
+          "csrf.go",
+          "crypto/subtle"
+        ],
+        "size": 2
+      },
+      {
+        "id": 13,
+        "components": [
+          "csrf_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 14,
+        "components": [
+          "method_override.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 15,
+        "components": [
+          "middleware.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 16,
+        "components": [
+          "rate_limiter.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 17,
+        "components": [
+          "recover.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 18,
+        "components": [
+          "redirect.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 19,
+        "components": [
+          "redirect_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 20,
+        "components": [
+          "request_id_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 21,
+        "components": [
+          "rewrite_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 22,
+        "components": [
+          "secure.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 23,
+        "components": [
+          "secure_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 24,
+        "components": [
+          "strings",
+          "slash.go"
+        ],
+        "size": 2
+      },
+      {
+        "id": 25,
+        "components": [
+          "slash_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 26,
+        "components": [
+          "static_other.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 27,
+        "components": [
+          "static_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 28,
+        "components": [
+          "static_windows.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 29,
+        "components": [
+          "util_test.go"
+        ],
+        "size": 1
+      },
+      {
+        "id": 30,
+        "components": [
+          "timeout.go",
+          "context_timeout_test.go",
+          "context_timeout.go",
+          "proxy.go",
+          "context"
+        ],
+        "size": 5
+      },
+      {
+        "id": 31,
+        "components": [
+          "echoHandlerFuncWrapper",
+          "testResponseWriterUnwrapperHijack",
+          "CSRFConfig",
+          "MethodOverrideConfig",
+          "TrailingSlashConfig",
+          "BindingError",
+          "BodyDumpConfig",
+          "bodyDumpResponseWriter",
+          "testResponseWriterUnwrapper",
+          "foo",
+          "RateLimiterConfig",
+          "tcpKeepAliveListener",
+          "ProxyConfig",
+          "TemplateRenderer",
+          "ErrKeyAuthMissing",
+          "testProvider",
+          "r",
+          "DecompressConfig",
+          "RedirectConfig"
+        ],
+        "size": 19
+      },
+      {
+        "id": 32,
+        "components": [
+          "c",
+          "rr",
+          "routeMethod",
+          "Struct",
+          "pathParam",
+          "TestStruct",
+          "BasicAuthConfig",
+          "RequestLoggerValues",
+          "customError",
+          "g",
+          "defaultFS",
+          "Group",
+          "RecoverConfig",
+          "RequestIDConfig",
+          "bindTestStructWithTags",
+          "routeMethods"
+        ],
+        "size": 16
+      },
+      {
+        "id": 33,
+        "components": [
+          "github.com/stretchr/testify/assert",
+          "renderer_test.go",
+          "echo_fs_test.go",
+          "context_fs_test.go",
+          "json_test.go",
+          "group_fs_test.go"
+        ],
+        "size": 6
+      },
+      {
+        "id": 34,
+        "components": [
+          "d",
+          "StaticConfig",
+          "randomBalancer"
+        ],
+        "size": 3
+      },
+      {
+        "id": 35,
+        "components": [
+          "ValueBinder",
+          "testFormFile",
+          "unixTimestampLast",
+          "unixTimestamp",
+          "e",
+          "RequestLoggerConfig",
+          "Visitor",
+          "RateLimiterMemoryStore",
+          "Template"
+        ],
+        "size": 9
+      },
+      {
+        "id": 36,
+        "components": [
+          "static.go",
+          "key_auth_test.go",
+          "extractor.go",
+          "errors",
+          "context_fs.go",
+          "request_logger.go",
+          "key_auth.go",
+          "cors_test.go",
+          "body_dump_test.go",
+          "rate_limiter_test.go"
+        ],
+        "size": 10
+      },
+      {
+        "id": 37,
+        "components": [
+          "gzipResponseWriter",
+          "RewriteConfig",
+          "s",
+          "customBalancer",
+          "SecureConfig",
+          "roundRobinBalancer",
+          "target",
+          "t",
+          "GzipConfig"
+        ],
+        "size": 9
+      },
+      {
+        "id": 38,
+        "components": [
+          "TimeoutConfig",
+          "n",
+          "ContextTimeoutConfig"
+        ],
+        "size": 3
+      },
+      {
+        "id": 39,
+        "components": [
+          "l",
+          "Response",
+          "ignorableWriter",
+          "KeyAuthConfig",
+          "node",
+          "Echo",
+          "ipChecker",
+          "CORSConfig"
+        ],
+        "size": 8
+      },
+      {
+        "id": 40,
+        "components": [
+          "util.go",
+          "middleware_test.go",
+          "compress.go",
+          "response.go",
+          "bufio",
+          "body_dump.go"
+        ],
+        "size": 6
+      },
+      {
+        "id": 41,
+        "components": [
+          "p",
+          "RateLimiterMemoryStoreConfig",
+          "ProxyTarget"
+        ],
+        "size": 3
+      },
+      {
+        "id": 42,
+        "components": [
+          "commonBalancer",
+          "x",
+          "coroutineSafeBuffer"
+        ],
+        "size": 3
+      },
+      {
+        "id": 43,
+        "components": [
+          "binder_test.go",
+          "encoding/json",
+          "json.go"
+        ],
+        "size": 3
+      },
+      {
+        "id": 44,
+        "components": [
+          "bind_test.go",
+          "bytes",
+          "recover_test.go",
+          "context_test.go",
+          "body_limit_test.go",
+          "echo_test.go",
+          "router.go",
+          "timeout_test.go",
+          "proxy_test.go",
+          "logger_test.go",
+          "method_override_test.go",
+          "extractor_test.go",
+          "context.go",
+          "compress_test.go",
+          "logger.go",
+          "decompress_test.go"
+        ],
+        "size": 16
+      },
+      {
+        "id": 45,
+        "components": [
+          "limitedReader",
+          "Root",
+          "BodyLimitConfig",
+          "Opts",
+          "4"
+        ],
+        "size": 5
+      },
+      {
+        "id": 46,
+        "components": [
+          "compress/gzip",
+          "decompress.go"
+        ],
+        "size": 2
+      },
+      {
+        "id": 47,
+        "components": [
+          "HTTPError",
+          "bindTestStruct",
+          "y"
+        ],
+        "size": 3
+      },
+      {
+        "id": 48,
+        "components": [
+          "github.com/labstack/gommon/log",
+          "log.go"
+        ],
+        "size": 2
+      },
+      {
+        "id": 49,
+        "components": [
+          "o",
+          "Router"
+        ],
+        "size": 2
+      },
+      {
+        "id": 50,
+        "components": [
+          "bind.go",
+          "encoding",
+          "binder.go"
+        ],
+        "size": 3
+      },
+      {
+        "id": 51,
+        "components": [
+          "S",
+          "filesystem"
+        ],
+        "size": 2
+      },
+      {
+        "id": 52,
+        "components": [
+          "github.com/labstack/echo/v4",
+          "request_logger_test.go",
+          "request_id.go"
+        ],
+        "size": 3
+      },
+      {
+        "id": 53,
+        "components": [
+          "rewrite.go",
+          "regexp"
+        ],
+        "size": 2
+      },
+      {
+        "id": 54,
+        "components": [
+          "backend_Go"
+        ],
+        "size": 1
+      }
+    ]
+  }
+}

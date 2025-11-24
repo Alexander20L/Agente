@@ -1,0 +1,43 @@
+---
+title: Sistema nvcc - Diagrama C3 (Componentes)
+---
+C4Component
+    title Diagrama de Componentes - nvcc (Layered Architecture (3-Tier))
+    
+    Container_Boundary(api, "API Backend - Backend") {
+        
+        Component(controllers, "Controllers", "Presentation", "Maneja peticiones HTTP y enruta a servicios")
+        Component(setup, "setup", "Controller", "Endpoint específico")
+        Component(conf, "conf", "Controller", "Endpoint específico")
+        Component(build_helpers, "build_helpers", "Controller", "Endpoint específico")
+        Component(comp_01attentionforward, "01-attention-forward", "Controller", "Endpoint específico")
+        Component(test_device_backend, "test_device_backend", "Controller", "Endpoint específico")
+        Component(test_core, "test_core", "Controller", "Endpoint específico")
+        Component(test_cast_matmul, "test_cast_matmul", "Controller", "Endpoint específico")
+        Component(print_helper, "print_helper", "Controller", "Endpoint específico")
+        Component(test_core, "test_core", "Controller", "Endpoint específico")
+        Component(test_frontend, "test_frontend", "Controller", "Endpoint específico")
+
+        Component(services, "Services", "Business Logic", "Implementa lógica de negocio")
+        Component(test_consan, "test_consan", "Service", "Lógica de negocio")
+        Component(test_frontend, "test_frontend", "Service", "Lógica de negocio")
+        Component(test_knobs, "test_knobs", "Service", "Lógica de negocio")
+        Component(test_mxfp, "test_mxfp", "Service", "Lógica de negocio")
+        Component(test_pipeliner, "test_pipeliner", "Service", "Lógica de negocio")
+        Component(test_random, "test_random", "Service", "Lógica de negocio")
+        Component(test_subprocess, "test_subprocess", "Service", "Lógica de negocio")
+        Component(test_tuple, "test_tuple", "Service", "Lógica de negocio")
+        Component(test_cache, "test_cache", "Service", "Lógica de negocio")
+        Component(test_specialize, "test_specialize", "Service", "Lógica de negocio")
+
+        Component(repositories, "Repositories", "Data Access", "Abstrae acceso a base de datos")
+        Component(test_tma_store_gemm, "test_tma_store_gemm", "Repository", "Acceso a datos")
+        Component(comp_07persistence, "07-persistence", "Repository", "Acceso a datos")
+        Component(proton, "proton", "Repository", "Acceso a datos")
+    }
+    
+    ContainerDb(database, "Database", "SQL", "Datos persistentes")
+    
+    Rel(controllers, services, "Invoca")
+    Rel(services, repositories, "Accede a datos via")
+    Rel(repositories, database, "Lee/Escribe", "SQL")

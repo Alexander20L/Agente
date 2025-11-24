@@ -1,0 +1,31 @@
+---
+title: Sistema simulator_resistance-main - Diagrama C3 (Componentes)
+---
+C4Component
+    title Diagrama de Componentes - simulator_resistance-main (MVC (Model-View-Controller))
+    
+    Container_Boundary(container, "Desktop Application") {
+        Component(ui_layer, "Interfaz Gráfica", "PyQt5", "Ventanas y widgets de la aplicación")
+        Component(batch_simulations, "batch_simulations", "Window/Dialog", "Componente visual")
+        Component(main, "main", "Window/Dialog", "Componente visual")
+        Component(splash_screen, "splash_screen", "Window/Dialog", "Componente visual")
+        Component(genetic_algorithm, "genetic_algorithm", "Window/Dialog", "Componente visual")
+
+        Component(services, "Services", "Business Logic", "Lógica de negocio")
+        Component(export_results, "export_results", "Service", "Lógica de negocio")
+        Component(reporting, "reporting", "Service", "Lógica de negocio")
+        Component(validation, "validation", "Service", "Lógica de negocio")
+
+        Component(models, "Models", "Domain", "Entidades del dominio")
+        Component(models, "models", "Entity", "Entidad")
+
+        Component(repositories, "Repositories", "Data Access", "Acceso a datos")
+        Component(database, "database", "Repository", "Repositorio")
+    }
+    
+    ContainerDb(database, "Database", "SQL", "Persistencia de datos")
+    
+    Rel(ui_layer, services, "Invoca")
+    Rel(services, models, "Usa")
+    Rel(services, repositories, "Consulta")
+    Rel(repositories, database, "Lee/Escribe", "SQL")

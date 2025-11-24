@@ -1,0 +1,1649 @@
+{
+  "project_path": "spring-petclinic",
+  "project_name": "spring-petclinic",
+  "total_files": 131,
+  "containers_detected": [
+    {
+      "type": "service",
+      "technology": "container (Docker)",
+      "path": "spring-petclinic\\.devcontainer\\Dockerfile",
+      "source": "Dockerfile",
+      "evidences": [
+        "Found Dockerfile"
+      ],
+      "score": 0.95,
+      "confidence": "high"
+    },
+    {
+      "type": "database",
+      "technology": "SQL",
+      "path": "spring-petclinic\\src\\main\\resources\\db\\h2",
+      "source": "structure",
+      "evidences": [
+        "schema/migrations"
+      ],
+      "score": 0.8,
+      "confidence": "high"
+    },
+    {
+      "type": "database",
+      "technology": "SQL",
+      "path": "spring-petclinic\\src\\main\\resources\\db\\hsqldb",
+      "source": "structure",
+      "evidences": [
+        "schema/migrations"
+      ],
+      "score": 0.8,
+      "confidence": "high"
+    },
+    {
+      "type": "database",
+      "technology": "SQL",
+      "path": "spring-petclinic\\src\\main\\resources\\db\\mysql",
+      "source": "structure",
+      "evidences": [
+        "schema/migrations"
+      ],
+      "score": 0.8,
+      "confidence": "high"
+    },
+    {
+      "type": "database",
+      "technology": "SQL",
+      "path": "spring-petclinic\\src\\main\\resources\\db\\postgres",
+      "source": "structure",
+      "evidences": [
+        "schema/migrations"
+      ],
+      "score": 0.8,
+      "confidence": "high"
+    }
+  ],
+  "relations_detected": [
+    {
+      "from": "I18nPropertiesSyncTest.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.web.servlet.LocaleResolver"
+    },
+    {
+      "from": "WelcomeController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "Specialty",
+      "to": "NamedEntity"
+    },
+    {
+      "from": "Specialty.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.boot.restclient.RestTemplateBuilder"
+    },
+    {
+      "from": "EntityUtils.java",
+      "to": "org.springframework.samples.petclinic.model.BaseEntity"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.annotation.PostMapping"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.transaction.annotation.Transactional"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.junit.jupiter.api.Nested"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.JoinTable"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest.WebEnvironment"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.http.RequestEntity"
+    },
+    {
+      "from": "VetTests.java",
+      "to": "org.springframework.util.SerializationUtils"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.http.MediaType"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.validation.BindingResult"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.context.annotation.Configuration"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.OneToMany"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "WebConfiguration",
+      "to": "WebMvcConfigurer"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.test.context.ActiveProfiles"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.ModelAttribute"
+    },
+    {
+      "from": "NamedEntity",
+      "to": "BaseEntity"
+    },
+    {
+      "from": "ValidatorTests.java",
+      "to": "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.core.env.ConfigurableEnvironment"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.InitBinder"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.JoinColumn"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "PetClinicApplication.java",
+      "to": "org.springframework.boot.SpringApplication"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.test.context.bean.override.mockito.MockitoBean"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.JoinColumn"
+    },
+    {
+      "from": "Pet.java",
+      "to": "org.springframework.samples.petclinic.model.NamedEntity"
+    },
+    {
+      "from": "OwnerRepository.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "Pet.java",
+      "to": "org.springframework.format.annotation.DateTimeFormat"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.http.RequestEntity"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.test.context.aot.DisabledInAotMode"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "Visit.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.testcontainers.DockerClientFactory"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.data.repository.Repository"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.http.ResponseEntity"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.junit.jupiter.api.Assertions"
+    },
+    {
+      "from": "Vet.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "PetTypeFormatter",
+      "to": "Formatter"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.core.env.PropertySource"
+    },
+    {
+      "from": "Owner.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "CacheConfiguration.java",
+      "to": "org.springframework.cache.annotation.EnableCaching"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.test.context.aot.DisabledInAotMode"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.springframework.boot.SpringApplication"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.context.annotation.ComponentScan"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.testcontainers.junit.jupiter.Testcontainers"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.boot.test.web.server.LocalServerPort"
+    },
+    {
+      "from": "Owner.java",
+      "to": "org.springframework.samples.petclinic.model.Person"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.test.web.servlet.MockMvc"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.context.ApplicationListener"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.boot.SpringApplication"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.junit.jupiter.api.extension.ExtendWith"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.FetchType"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.web.client.RestTemplate"
+    },
+    {
+      "from": "Visit",
+      "to": "BaseEntity"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.autoconfigure.SpringBootApplication"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "CacheConfiguration.java",
+      "to": "org.springframework.context.annotation.Bean"
+    },
+    {
+      "from": "ValidatorTests.java",
+      "to": "jakarta.validation.Validator"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.springframework.samples.petclinic.vet.Vet"
+    },
+    {
+      "from": "PetTypeFormatter.java",
+      "to": "org.springframework.stereotype.Component"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "jakarta.validation.Valid"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.vet.Vet"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.test.context.aot.DisabledInAotMode"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.PathVariable"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.Owner"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.Pet"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.mockito.Mock"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.Column"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.context.annotation.Bean"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.PetTypeRepository"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.FetchType"
+    },
+    {
+      "from": "Person.java",
+      "to": "jakarta.validation.constraints.NotBlank"
+    },
+    {
+      "from": "WelcomeController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.test.web.servlet.MockMvc"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.FetchType"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.ManyToMany"
+    },
+    {
+      "from": "PetController.java",
+      "to": "jakarta.validation.Valid"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.test.web.servlet.request.MockMvcRequestBuilders"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.boot.testcontainers.service.connection.ServiceConnection"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.springframework.samples.petclinic.model.BaseEntity"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.validation.BindingResult"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.validation.constraints.NotBlank"
+    },
+    {
+      "from": "Visit.java",
+      "to": "jakarta.persistence.Column"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.validation.BindingResult"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.ResponseEntity"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.assertj.core.util.Lists"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.samples.petclinic.vet.VetRepository"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest.WebEnvironment"
+    },
+    {
+      "from": "OwnerRepository.java",
+      "to": "jakarta.annotation.Nonnull"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.springframework.context.annotation.Bean"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.InitBinder"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.ui.Model"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "Vet",
+      "to": "Person"
+    },
+    {
+      "from": "PropertiesLogger",
+      "to": "ApplicationListener"
+    },
+    {
+      "from": "Visit.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "OwnerRepository.java",
+      "to": "org.springframework.data.jpa.repository.JpaRepository"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.HttpHeaders"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "Person.java",
+      "to": "jakarta.persistence.MappedSuperclass"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.util.Assert"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.annotation.ModelAttribute"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.restclient.RestTemplateBuilder"
+    },
+    {
+      "from": "NamedEntity.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.http.ResponseEntity"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.resttestclient.TestRestTemplate"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest.WebEnvironment"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.data.domain.PageRequest"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.context.event.ApplicationPreparedEvent"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.CascadeType"
+    },
+    {
+      "from": "Visit.java",
+      "to": "org.springframework.samples.petclinic.model.BaseEntity"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.junit.jupiter.api.extension.ExtendWith"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.HttpEntity"
+    },
+    {
+      "from": "Owner",
+      "to": "Person"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.springframework.validation.Errors"
+    },
+    {
+      "from": "Owner.java",
+      "to": "org.springframework.util.Assert"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.web.servlet.i18n.SessionLocaleResolver"
+    },
+    {
+      "from": "Vets.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "Visit.java",
+      "to": "org.springframework.format.annotation.DateTimeFormat"
+    },
+    {
+      "from": "Person.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "Specialty.java",
+      "to": "org.springframework.samples.petclinic.model.NamedEntity"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.http.HttpStatus"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.test.web.servlet.ResultActions"
+    },
+    {
+      "from": "CrashController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.ui.Model"
+    },
+    {
+      "from": "Vet.java",
+      "to": "org.springframework.samples.petclinic.model.NamedEntity"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest"
+    },
+    {
+      "from": "PetValidator.java",
+      "to": "org.springframework.validation.Errors"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.RequestMapping"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.testcontainers.containers.MySQLContainer"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.test.context.bean.override.mockito.MockitoBean"
+    },
+    {
+      "from": "Pet",
+      "to": "NamedEntity"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.boot.test.web.server.LocalServerPort"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.OrderBy"
+    },
+    {
+      "from": "ValidatorTests.java",
+      "to": "org.springframework.context.i18n.LocaleContextHolder"
+    },
+    {
+      "from": "Owner.java",
+      "to": "org.springframework.core.style.ToStringCreator"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.junit.jupiter.api.BeforeAll"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest"
+    },
+    {
+      "from": "NamedEntity.java",
+      "to": "jakarta.validation.constraints.NotBlank"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.PathVariable"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.data.domain.PageRequest"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.dao.DataAccessException"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "PetClinicRuntimeHints",
+      "to": "RuntimeHintsRegistrar"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.test.web.server.LocalServerPort"
+    },
+    {
+      "from": "BaseEntity.java",
+      "to": "jakarta.persistence.GeneratedValue"
+    },
+    {
+      "from": "PetType",
+      "to": "NamedEntity"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "jakarta.validation.Valid"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.web.bind.annotation.RequestParam"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.testcontainers.utility.DockerImageName"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.samples.petclinic.vet.VetRepository"
+    },
+    {
+      "from": "package-info.java",
+      "to": "org.jspecify.annotations.NullMarked"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.context.annotation.FilterType"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.WebDataBinder"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.servlet.ModelAndView"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.web.client.RestTemplate"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.Visit"
+    },
+    {
+      "from": "EntityUtils.java",
+      "to": "org.springframework.orm.ObjectRetrievalFailureException"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.ui.ModelMap"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.validation.constraints.Pattern"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.xml.bind.annotation.XmlElement"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.WebDataBinder"
+    },
+    {
+      "from": "NamedEntity.java",
+      "to": "jakarta.persistence.MappedSuperclass"
+    },
+    {
+      "from": "PetType.java",
+      "to": "org.springframework.samples.petclinic.model.NamedEntity"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.boot.restclient.RestTemplateBuilder"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.springframework.boot.testcontainers.service.connection.ServiceConnection"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.apache.commons.logging.LogFactory"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.testcontainers.junit.jupiter.Container"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.servlet.mvc.support.RedirectAttributes"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.springframework.context.annotation.Profile"
+    },
+    {
+      "from": "BaseEntity.java",
+      "to": "jakarta.persistence.GenerationType"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.Column"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.annotation.InitBinder"
+    },
+    {
+      "from": "Visit.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.util.StringUtils"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.test.context.bean.override.mockito.MockitoBean"
+    },
+    {
+      "from": "CacheConfiguration.java",
+      "to": "org.springframework.context.annotation.Configuration"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.web.servlet.i18n.LocaleChangeInterceptor"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.HttpStatus"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.web.servlet.config.annotation.InterceptorRegistry"
+    },
+    {
+      "from": "PetControllerTests.java",
+      "to": "org.springframework.test.web.servlet.MockMvc"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.RequestParam"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.PostMapping"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.stereotype.Controller"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "Specialty.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.HttpMethod"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.JoinColumn"
+    },
+    {
+      "from": "Vet.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.springframework.test.context.bean.override.mockito.MockitoBean"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.servlet.mvc.support.RedirectAttributes"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.springframework.samples.petclinic.model.Person"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.http.RequestEntity"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.mockito.junit.jupiter.MockitoExtension"
+    },
+    {
+      "from": "BaseEntity.java",
+      "to": "jakarta.persistence.MappedSuperclass"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "PetClinicApplication.java",
+      "to": "org.springframework.context.annotation.ImportRuntimeHints"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.beans.factory.annotation.Autowired"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.springframework.aot.hint.RuntimeHintsRegistrar"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.PostMapping"
+    },
+    {
+      "from": "Person",
+      "to": "BaseEntity"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.beans.factory.annotation.Value"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.test.context.aot.DisabledInAotMode"
+    },
+    {
+      "from": "OwnerController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.PetType"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.springframework.http.HttpStatus"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.http.ResponseEntity"
+    },
+    {
+      "from": "Pet.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.owner.OwnerRepository"
+    },
+    {
+      "from": "MysqlTestApplication.java",
+      "to": "org.springframework.context.annotation.Configuration"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.springframework.test.context.aot.DisabledInAotMode"
+    },
+    {
+      "from": "PetTypeFormatter.java",
+      "to": "org.springframework.format.Formatter"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.ModelAttribute"
+    },
+    {
+      "from": "BaseEntity.java",
+      "to": "jakarta.persistence.Id"
+    },
+    {
+      "from": "BaseEntity.java",
+      "to": "org.jspecify.annotations.Nullable"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.cache.annotation.Cacheable"
+    },
+    {
+      "from": "PetController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.test.context.ActiveProfiles"
+    },
+    {
+      "from": "CrashControllerTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.CascadeType"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.testcontainers.containers.MySQLContainer"
+    },
+    {
+      "from": "OwnerRepository.java",
+      "to": "org.springframework.data.domain.Pageable"
+    },
+    {
+      "from": "PetTypeRepository.java",
+      "to": "org.springframework.data.jpa.repository.Query"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.http.HttpStatus"
+    },
+    {
+      "from": "VetTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "WebConfiguration.java",
+      "to": "org.springframework.web.servlet.config.annotation.WebMvcConfigurer"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.test.context.SpringBootTest"
+    },
+    {
+      "from": "CrashController.java",
+      "to": "org.springframework.web.bind.annotation.GetMapping"
+    },
+    {
+      "from": "PetValidator",
+      "to": "Validator"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.data.domain.PageImpl"
+    },
+    {
+      "from": "PetType.java",
+      "to": "jakarta.persistence.Entity"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.annotation.PathVariable"
+    },
+    {
+      "from": "Vet.java",
+      "to": "org.springframework.samples.petclinic.model.Person"
+    },
+    {
+      "from": "ValidatorTests.java",
+      "to": "jakarta.validation.ConstraintViolation"
+    },
+    {
+      "from": "PetType.java",
+      "to": "jakarta.persistence.Table"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "BaseEntity",
+      "to": "Serializable"
+    },
+    {
+      "from": "PetClinicApplication.java",
+      "to": "org.springframework.boot.autoconfigure.SpringBootApplication"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "VetControllerTests.java",
+      "to": "org.springframework.test.web.servlet.request.MockMvcRequestBuilders"
+    },
+    {
+      "from": "Vets.java",
+      "to": "jakarta.xml.bind.annotation.XmlRootElement"
+    },
+    {
+      "from": "Owner.java",
+      "to": "jakarta.persistence.OrderBy"
+    },
+    {
+      "from": "NamedEntity.java",
+      "to": "jakarta.persistence.Column"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.ManyToOne"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.junit.jupiter.api.Nested"
+    },
+    {
+      "from": "VisitControllerTests.java",
+      "to": "org.springframework.test.web.servlet.MockMvc"
+    },
+    {
+      "from": "PetTypeRepository.java",
+      "to": "org.springframework.data.jpa.repository.JpaRepository"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.bind.WebDataBinder"
+    },
+    {
+      "from": "PetValidator.java",
+      "to": "org.springframework.util.StringUtils"
+    },
+    {
+      "from": "MySqlIntegrationTests.java",
+      "to": "org.testcontainers.utility.DockerImageName"
+    },
+    {
+      "from": "Vets.java",
+      "to": "jakarta.xml.bind.annotation.XmlElement"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.junit.jupiter.api.BeforeEach"
+    },
+    {
+      "from": "CacheConfiguration.java",
+      "to": "org.springframework.boot.cache.autoconfigure.JCacheManagerCustomizer"
+    },
+    {
+      "from": "VetController.java",
+      "to": "org.springframework.web.bind.annotation.ResponseBody"
+    },
+    {
+      "from": "PetValidator.java",
+      "to": "org.springframework.validation.Validator"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.core.ParameterizedTypeReference"
+    },
+    {
+      "from": "PetClinicRuntimeHints.java",
+      "to": "org.springframework.aot.hint.RuntimeHints"
+    },
+    {
+      "from": "ValidatorTests.java",
+      "to": "org.junit.jupiter.api.Test"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.MediaType"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.data.domain.Page"
+    },
+    {
+      "from": "ClinicServiceTests.java",
+      "to": "org.springframework.samples.petclinic.vet.VetRepository"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.junit.jupiter.api.condition.DisabledInNativeImage"
+    },
+    {
+      "from": "PetTypeFormatterTests.java",
+      "to": "org.mockito.junit.jupiter.MockitoExtension"
+    },
+    {
+      "from": "CrashControllerIntegrationTests.java",
+      "to": "org.springframework.http.RequestEntity"
+    },
+    {
+      "from": "PetClinicIntegrationTests.java",
+      "to": "org.springframework.samples.petclinic.vet.VetRepository"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.core.env.EnumerablePropertySource"
+    },
+    {
+      "from": "Visit.java",
+      "to": "jakarta.validation.constraints.NotBlank"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.boot.builder.SpringApplicationBuilder"
+    },
+    {
+      "from": "Person.java",
+      "to": "jakarta.persistence.Column"
+    },
+    {
+      "from": "OwnerControllerTests.java",
+      "to": "org.springframework.data.domain.PageImpl"
+    },
+    {
+      "from": "VetRepository.java",
+      "to": "org.springframework.transaction.annotation.Transactional"
+    },
+    {
+      "from": "PetValidatorTests.java",
+      "to": "org.springframework.validation.MapBindingResult"
+    },
+    {
+      "from": "Pet.java",
+      "to": "jakarta.persistence.OneToMany"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.springframework.web.client.RestTemplate"
+    },
+    {
+      "from": "PostgresIntegrationTests.java",
+      "to": "org.apache.commons.logging.Log"
+    },
+    {
+      "from": "VisitController.java",
+      "to": "org.springframework.web.servlet.mvc.support.RedirectAttributes"
+    }
+  ],
+  "dockerfiles_found": 1,
+  "infra_detected": [
+    {
+      "type": "orchestration",
+      "tool": "docker-compose",
+      "path": "spring-petclinic"
+    },
+    {
+      "type": "ci",
+      "tool": "pipelines",
+      "path": "spring-petclinic"
+    }
+  ],
+  "project_type": "api-backend",
+  "architectural_layers": {
+    "presentation": {
+      "count": 14,
+      "components": [
+        "OwnerController.java",
+        "PetController.java",
+        "PetTypeFormatter.java",
+        "VisitController.java",
+        "CrashController.java",
+        "WelcomeController.java",
+        "VetController.java",
+        "OwnerControllerTests.java",
+        "PetControllerTests.java",
+        "PetTypeFormatterTests.java"
+      ]
+    },
+    "application": {
+      "count": 12,
+      "components": [
+        "PetClinicApplication.java",
+        "PetClinicRuntimeHints.java",
+        "PetValidator.java",
+        "WebConfiguration.java",
+        "Vets.java",
+        "MySqlIntegrationTests.java",
+        "MysqlTestApplication.java",
+        "PetClinicIntegrationTests.java",
+        "PostgresIntegrationTests.java",
+        "PetValidatorTests.java"
+      ]
+    },
+    "domain": {
+      "count": 4,
+      "components": [
+        "BaseEntity.java",
+        "NamedEntity.java",
+        "Person.java",
+        "EntityUtils.java"
+      ]
+    },
+    "infrastructure": {
+      "count": 9,
+      "components": [
+        "Owner.java",
+        "OwnerRepository.java",
+        "Pet.java",
+        "PetType.java",
+        "PetTypeRepository.java",
+        "Visit.java",
+        "Specialty.java",
+        "Vet.java",
+        "VetRepository.java"
+      ]
+    }
+  },
+  "technologies": {
+    "backend": [
+      "Spring Boot"
+    ],
+    "frontend": [],
+    "database": [
+      "SQL"
+    ],
+    "infrastructure": [
+      "container (Docker)"
+    ]
+  },
+  "data_flows": {
+    "total_relations": 337,
+    "hubs": [
+      {
+        "component": "PostgresIntegrationTests.java",
+        "connections": 23,
+        "type": "hub"
+      },
+      {
+        "component": "MySqlIntegrationTests.java",
+        "connections": 19,
+        "type": "hub"
+      },
+      {
+        "component": "CrashControllerIntegrationTests.java",
+        "connections": 18,
+        "type": "hub"
+      },
+      {
+        "component": "OwnerController.java",
+        "connections": 17,
+        "type": "hub"
+      },
+      {
+        "component": "ClinicServiceTests.java",
+        "connections": 16,
+        "type": "hub"
+      }
+    ],
+    "highly_connected_components": 80
+  },
+  "architecture_patterns": [
+    {
+      "name": "MVC (Model-View-Controller)",
+      "confidence": 0.9,
+      "evidence": "12 controllers, 2 views, 4 models"
+    },
+    {
+      "name": "Layered Architecture (3-Tier)",
+      "confidence": 0.85,
+      "evidence": "Presentation (12), Business (12), Data (9)"
+    },
+    {
+      "name": "Repository Pattern",
+      "confidence": 0.9,
+      "evidence": "9 repositories for data access"
+    },
+    {
+      "name": "RESTful API",
+      "confidence": 0.95,
+      "evidence": "Backend API with 12 endpoints"
+    },
+    {
+      "name": "Microservices (potential)",
+      "confidence": 0.6,
+      "evidence": "5 containers detected"
+    }
+  ],
+  "system_responsibilities": [
+    "Expone API REST para operaciones CRUD",
+    "Gestiona lógica de negocio",
+    "Persiste datos en base de datos",
+    "Gestiona 14 endpoints/vistas",
+    "Modela 4 entidades de negocio"
+  ],
+  "components_sample": [
+    {
+      "type": "service",
+      "name": "PetClinicApplication.java",
+      "classes": [
+        "PetClinicApplication"
+      ],
+      "entry_points": [
+        "main"
+      ]
+    },
+    {
+      "type": "service",
+      "name": "PetClinicRuntimeHints.java",
+      "classes": [
+        "PetClinicRuntimeHints"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "model",
+      "name": "BaseEntity.java",
+      "classes": [
+        "for",
+        "public",
+        "BaseEntity"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "model",
+      "name": "NamedEntity.java",
+      "classes": [
+        "for",
+        "public",
+        "NamedEntity"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "model",
+      "name": "Person.java",
+      "classes": [
+        "public",
+        "Person"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "repository",
+      "name": "Owner.java",
+      "classes": [
+        "Owner"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "OwnerController.java",
+      "classes": [
+        "OwnerController"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "repository",
+      "name": "OwnerRepository.java",
+      "classes": [
+        "for",
+        "can",
+        "OwnerRepository"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "repository",
+      "name": "Pet.java",
+      "classes": [
+        "Pet"
+      ],
+      "entry_points": []
+    },
+    {
+      "type": "controller",
+      "name": "PetController.java",
+      "classes": [
+        "PetController"
+      ],
+      "entry_points": []
+    }
+  ]
+}

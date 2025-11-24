@@ -4,6 +4,204 @@ Usa el análisis mejorado para crear diagramas Mermaid precisos
 """
 
 
+def _detect_containers(analysis):
+    """
+    Detecta los CONTENEDORES reales del sistema (aplicaciones ejecutables)
+    según el modelo C4 correcto.
+    
+    Contenedores = Aplicaciones/Procesos ejecutables, NO módulos internos
+    Ejemplos: Desktop App, Web App, API Backend, Database, Cache, Message Queue
+    """
+    containers = []
+    project_type = analysis.get("project_type", "unknown")
+    technologies = analysis.get("technologies", {})
+    components = analysis.get("components_detected", [])
+    
+    # 1. APLICACIÓN PRINCIPAL (Desktop, Web, Mobile, CLI, API)
+    main_container = _detect_main_application(project_type, technologies, components, analysis)
+    if main_container:
+        containers.append(main_container)
+    
+    # 2. DATABASE
+    db_container = _detect_database_container(technologies, components)
+    if db_container:
+        containers.append(db_container)
+    
+    # 3. CACHE (Redis, Memcached)
+    cache_container = _detect_cache_container(technologies, components)
+    if cache_container:
+        containers.append(cache_container)
+    
+    # 4. MESSAGE QUEUE (RabbitMQ, Kafka)
+    mq_container = _detect_message_queue_container(technologies, components)
+    if mq_container:
+        containers.append(mq_container)
+    
+    return containers
+
+
+def _detect_main_application(project_type, technologies, components, analysis):
+    """Detecta el contenedor de aplicación principal"""
+    frontend_tech = technologies.get("frontend", [])
+    backend_tech = technologies.get("backend", [])
+    all_tech = ", ".join(frontend_tech + backend_tech)
+    
+    component_count = len(components)
+    business_modules = analysis.get("business_modules", [])
+    
+    # GUI Application (Desktop)
+    if project_type == "gui-application" or any(gui in all_tech for gui in ["PyQt", "Tkinter", "JavaFX", "Swing", "WPF", "WinForms", "Electron"]):
+        tech = next((t for t in ["PyQt5", "PyQt6", "Tkinter", "JavaFX", "Swing", "WPF", "WinForms", "Electron"] if t in all_tech), "GUI Framework")
+        return {
+            "id": "desktop_app",
+            "name": "Desktop Application",
+            "technology": tech,
+            "description": f"Aplicación de escritorio con interfaz gráfica",
+            "type": "application"
+        }
+    
+    # Mobile Application
+    elif project_type == "mobile-app" or any(mobile in all_tech for mobile in ["Swift", "Kotlin", "React Native", "Flutter", "Xamarin"]):
+        tech = next((t for t in ["Swift", "Kotlin", "React Native", "Flutter", "Xamarin"] if t in all_tech), "Mobile Framework")
+        return {
+            "id": "mobile_app",
+            "name": "Mobile Application",
+            "technology": tech,
+            "description": f"Aplicación móvil nativa/híbrida",
+            "type": "application"
+        }
+    
+    # Web Application (Full Stack)
+    elif any(web in all_tech for web in ["React", "Vue", "Angular", "Django", "Flask", "FastAPI", "Express", "Spring MVC"]):
+        # Detectar si tiene frontend Y backend
+        has_frontend = len(frontend_tech) > 0
+        has_backend = len(backend_tech) > 0
+        
+        if has_frontend and has_backend:
+            tech = f"{', '.join(frontend_tech[:2])} + {', '.join(backend_tech[:2])}"
+            return {
+                "id": "web_app",
+                "name": "Web Application",
+                "technology": tech,
+                "description": f"Aplicación web con frontend y backend",
+                "type": "application"
+            }
+        elif has_frontend:
+            tech = ", ".join(frontend_tech[:2])
+            return {
+                "id": "spa",
+                "name": "Single Page Application",
+                "technology": tech,
+                "description": f"Frontend web en el navegador",
+                "type": "application"
+            }
+        else:
+            # Solo backend
+            tech = ", ".join(backend_tech[:2])
+            return {
+                "id": "api_backend",
+                "name": "API Backend",
+                "technology": tech,
+                "description": f"API REST/GraphQL",
+                "type": "application"
+            }
+    
+    # API Backend (REST/GraphQL)
+    elif project_type in ["api-backend", "spring-boot", "fastapi", "nodejs"] or any(api in all_tech for api in ["Spring Boot", "FastAPI", "Express", "ASP.NET", "Gin", "Ktor"]):
+        tech = next((t for t in ["Spring Boot", "FastAPI", "Express", "ASP.NET Core", "Gin", "Ktor"] if t in all_tech), ", ".join(backend_tech[:2]) if backend_tech else "Backend Framework")
+        return {
+            "id": "api",
+            "name": "API Backend",
+            "technology": tech,
+            "description": f"API REST para servicios de negocio",
+            "type": "application"
+        }
+    
+    # CLI Application (Compiler, Tool)
+    elif project_type in ["compiler", "cli-tool"] or component_count < 5:
+        tech = ", ".join(backend_tech[:2]) if backend_tech else "Command Line"
+        return {
+            "id": "cli_app",
+            "name": "CLI Application",
+            "technology": tech,
+            "description": f"Herramienta de línea de comandos",
+            "type": "application"
+        }
+    
+    # Generic Application (fallback)
+    else:
+        tech = ", ".join((backend_tech + frontend_tech)[:2]) if (backend_tech or frontend_tech) else "Application"
+        return {
+            "id": "app",
+            "name": "Application",
+            "technology": tech,
+            "description": f"Aplicación principal del sistema",
+            "type": "application"
+        }
+
+
+def _detect_database_container(technologies, components):
+    """Detecta contenedor de base de datos"""
+    db_tech = technologies.get("database", [])
+    
+    if db_tech:
+        tech = ", ".join(db_tech[:2])  # Máximo 2 tecnologías
+        return {
+            "id": "database",
+            "name": "Database",
+            "technology": tech,
+            "description": "Almacena datos persistentes del sistema",
+            "type": "database"
+        }
+    
+    # Detectar por archivos comunes
+    db_files = [c for c in components if any(db in c.lower() for db in [".db", ".sqlite", "database", "schema.sql", "migrations"])]
+    if db_files:
+        return {
+            "id": "database",
+            "name": "Database",
+            "technology": "SQL Database",
+            "description": "Almacena datos persistentes del sistema",
+            "type": "database"
+        }
+    
+    return None
+
+
+def _detect_cache_container(technologies, components):
+    """Detecta contenedor de cache"""
+    cache_tech = [t for t in technologies.get("infrastructure", []) if "redis" in t.lower() or "memcached" in t.lower()]
+    
+    if cache_tech:
+        tech = cache_tech[0]
+        return {
+            "id": "cache",
+            "name": "Cache",
+            "technology": tech,
+            "description": "Cache en memoria para mejorar rendimiento",
+            "type": "infrastructure"
+        }
+    
+    return None
+
+
+def _detect_message_queue_container(technologies, components):
+    """Detecta contenedor de message queue"""
+    mq_tech = [t for t in technologies.get("infrastructure", []) if any(mq in t.lower() for mq in ["rabbitmq", "kafka", "activemq", "sqs"])]
+    
+    if mq_tech:
+        tech = mq_tech[0]
+        return {
+            "id": "message_queue",
+            "name": "Message Queue",
+            "technology": tech,
+            "description": "Cola de mensajes para comunicación asíncrona",
+            "type": "infrastructure"
+        }
+    
+    return None
+
+
 def generate_c1_diagram(analysis):
     """Genera diagrama C1 (Contexto del Sistema) con contexto de negocio inferido"""
     
@@ -359,47 +557,16 @@ def _generate_system_description(business_modules, responsibilities, domain_cont
 
 def generate_c2_diagram(analysis):
     """
-    Genera diagrama C2 (Contenedores) MEJORADO
-    - Si detecta módulos de negocio: genera 1 container por módulo
-    - Si no: usa el método tradicional por capas
+    Genera diagrama C2 (Contenedores) siguiendo el modelo C4 CORRECTAMENTE
+    Contenedores = Aplicaciones ejecutables (Desktop App, API, Database, etc)
+    NO módulos internos ni componentes individuales
     """
     
     project_name = analysis.get("project_name", "Sistema")
     project_type = analysis.get("project_type", "unknown")
-    business_modules = analysis.get("business_modules", [])
-    technologies = analysis.get("technologies", {})
-    layers = analysis.get("architectural_layers", {})
-    components = analysis.get("components_detected", [])
-    total_files = analysis.get("total_files", 0)
     
-    # Detectar si es GUI app
-    is_gui_app = project_type == "gui-application"
-    is_mobile_app = project_type == "mobile-app"
-    
-    # Backend/Frontend tech según tipo
-    if is_gui_app:
-        frontend_tech = ", ".join(technologies.get("frontend", ["GUI Framework"]))
-        backend_tech = frontend_tech
-    elif is_mobile_app:
-        frontend_tech = ", ".join(technologies.get("frontend", ["Mobile Framework"]))
-        backend_tech = frontend_tech
-    else:
-        backend_tech_list = technologies.get("backend", [])
-        if not backend_tech_list:
-            type_tech_map = {
-                "api-backend": ["Backend Framework"],
-                "spring-boot": ["Spring Boot"],
-                "django": ["Django"],
-                "fastapi": ["FastAPI"],
-                "nodejs": ["Node.js"],
-                "dotnet": [".NET Core"],
-                "go": ["Go"],
-                "rust": ["Rust"]
-            }
-            backend_tech_list = type_tech_map.get(project_type, ["Backend"])
-        backend_tech = ", ".join(backend_tech_list)
-    
-    db_tech = ", ".join(technologies.get("database", ["SQL Database"]))
+    # Detectar contenedores reales (aplicaciones ejecutables)
+    containers = _detect_containers(analysis)
     
     diagram = f"""---
 title: Sistema {project_name} - Diagrama C2 (Contenedores)
@@ -412,210 +579,85 @@ C4Container
     Container_Boundary(system, "{project_name}") {{
 """
     
-    # NUEVO: Si hay módulos de negocio detectados, generar containers por módulo
-    if len(business_modules) >= 3:  # Al menos 3 módulos para usar vista modular
-        # Escalar según tamaño del proyecto (OPCIÓN A - aumentado)
-        if total_files < 50:
-            max_modules = 10
-        elif total_files < 200:
-            max_modules = 18
-        else:
-            max_modules = 30
-        
-        # ORDENAR POR IMPORTANCIA: módulos con más archivos primero (son los centrales)
-        sorted_modules = sorted(business_modules, key=lambda m: m.get("files", 0), reverse=True)
-        selected_modules = sorted_modules[:max_modules]
-        
-        for module in selected_modules:
-            module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-            module_name = module["name"]
-            file_count = module["files"]
-            
-            # Descripción basada en archivos encontrados
-            if file_count == 1:
-                desc = f"1 componente"
-            else:
-                desc = f"{file_count} componentes"
-            
-            diagram += f"""        Container({module_id}, "{module_name}", "{backend_tech}", "{desc}")
-"""
-        
-        # Agregar contenedores adicionales si hay muchos módulos
-        if len(business_modules) > max_modules:
-            remaining = len(business_modules) - max_modules
-            diagram += f"""        Container(other_services, "Otros Servicios", "{backend_tech}", "{remaining} módulos adicionales")
-"""
-    
-    else:
-        # Método tradicional: por capas (cuando no hay suficientes módulos)
-        controllers_count = layers.get("presentation", {}).get("count", 0)
-        if controllers_count > 0 or len(components) > 0:
-            comp_count = controllers_count if controllers_count > 0 else len(components)
-            
-            if is_gui_app:
-                diagram += f"""        Container(gui, "Interfaz Gráfica", "{backend_tech}", "Contiene {comp_count} ventanas y widgets")
-"""
-            elif is_mobile_app:
-                diagram += f"""        Container(mobile, "Aplicación Mobile", "{backend_tech}", "Contiene {comp_count} pantallas y componentes")
-"""
-            else:
-                diagram += f"""        Container(api, "API Backend", "{backend_tech}", "Gestiona {comp_count} endpoints/componentes")
-"""
-        
-        services_count = layers.get("application", {}).get("count", 0)
-        if services_count > 0:
-            if is_gui_app:
-                diagram += f"""        Container(business, "Lógica de Negocio", "{backend_tech}", "Contiene {services_count} controladores y modelos")
-"""
-            else:
-                diagram += f"""        Container(business, "Business Logic", "{backend_tech}", "Contiene {services_count} servicios de negocio")
-"""
-        
-        repos_count = layers.get("infrastructure", {}).get("count", 0)
-        if repos_count > 0:
-            diagram += f"""        Container(data, "Capa de Acceso a Datos", "{backend_tech}", "{repos_count} repositorios para acceso a datos")
+    # Agregar contenedores detectados (solo aplicaciones, no DB)
+    app_containers = [c for c in containers if c["type"] == "application"]
+    for container in app_containers:
+        cont_id = container["id"]
+        cont_name = container["name"]
+        cont_tech = container["technology"]
+        cont_desc = container["description"]
+        diagram += f"""        Container({cont_id}, "{cont_name}", "{cont_tech}", "{cont_desc}")
 """
     
     diagram += """    }
     
-    ContainerDb(database, "Base de Datos", \""""
+"""
     
-    diagram += db_tech
-    diagram += """", "Almacena entidades del dominio")
+    # Agregar base de datos fuera del boundary (si existe)
+    db_container = next((c for c in containers if c["type"] == "database"), None)
+    if db_container:
+        db_tech = db_container["technology"]
+        db_desc = db_container["description"]
+        diagram += f"""    ContainerDb(database, "Database", "{db_tech}", "{db_desc}")
     
 """
     
-    # Generar relaciones
-    if len(business_modules) >= 3:
-        selected_modules = business_modules[:max_modules] if 'max_modules' in locals() else business_modules[:15]
+    # Agregar cache (si existe)
+    cache_container = next((c for c in containers if c.get("id") == "cache"), None)
+    if cache_container:
+        cache_tech = cache_container["technology"]
+        diagram += f"""    Container_Ext(cache, "Cache", "{cache_tech}", "Cache en memoria")
+    
+"""
+    
+    # Agregar message queue (si existe)
+    mq_container = next((c for c in containers if c.get("id") == "message_queue"), None)
+    if mq_container:
+        mq_tech = mq_container["technology"]
+        diagram += f"""    Container_Ext(message_queue, "Message Queue", "{mq_tech}", "Cola de mensajes")
+    
+"""
+    
+    # RELACIONES entre contenedores
+    # 1. Usuario → Aplicación principal
+    if app_containers:
+        main_app = app_containers[0]  # Primera aplicación (la principal)
+        app_id = main_app["id"]
         
-        # 1. USUARIO → MÓDULOS PRINCIPALES (solo user-facing)
-        # Filtrar módulos que NO son infraestructura interna
-        exclude_keywords = ["config", "model", "domain", "entity", "repository", "util", "helper", "test"]
-        user_facing = [m for m in selected_modules 
-                      if not any(kw in m["keyword"].lower() for kw in exclude_keywords)]
-        user_facing_modules = user_facing[:min(4, len(user_facing))]
-        
-        # Descripción específica según tipo de interacción
-        if is_gui_app:
-            rel_desc = "Interactúa con"
+        # Determinar tecnología de interacción según tipo
+        if project_type == "gui-application":
             tech = "Desktop Application"
-        elif is_mobile_app:
-            rel_desc = "Usa la aplicación"
+            action = "Usa"
+        elif project_type == "mobile-app":
             tech = "Mobile App"
+            action = "Usa"
+        elif project_type in ["api-backend", "spring-boot", "fastapi", "nodejs"]:
+            tech = "HTTPS/REST"
+            action = "Hace peticiones a"
         else:
-            rel_desc = "Visita usando"
             tech = "HTTPS"
+            action = "Usa"
         
-        for module in user_facing_modules:
-            module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-            diagram += f"""    Rel(user, {module_id}, "{rel_desc}", "{tech}")
-"""
-        
-        # 2. MÓDULOS → BASE DE DATOS (solo módulos con lógica de persistencia)
-        # Excluir config, model/domain (son POJOs), y test
-        db_exclude = ["config", "model", "domain", "entity", "test"]
-        data_modules = [m for m in selected_modules 
-                       if not any(kw in m["keyword"].lower() for kw in db_exclude)]
-        
-        for module in data_modules:
-            module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-            module_keyword = module["keyword"].lower()
-            
-            # Descripción específica según tipo de operación
-            if "read" in module_keyword or "query" in module_keyword:
-                operation = "Lee datos de"
-            elif "write" in module_keyword or "create" in module_keyword or "update" in module_keyword:
-                operation = "Escribe datos en"
-            else:
-                operation = "Lee y escribe en"
-            
-            diagram += f"""    Rel({module_id}, database, "{operation}", "SQL/JDBC")
-"""
-        
-        # 3. RELACIONES COHERENTES ENTRE MÓDULOS (siguiendo flujo lógico)
-        
-        # Buscar módulos clave para establecer relaciones lógicas
-        auth_module = next((m for m in selected_modules if "auth" in m["keyword"].lower() or "login" in m["keyword"].lower() or "security" in m["keyword"].lower()), None)
-        user_module = next((m for m in selected_modules if "user" in m["keyword"].lower() or "account" in m["keyword"].lower() or "customer" in m["keyword"].lower()), None)
-        payment_module = next((m for m in selected_modules if "payment" in m["keyword"].lower() or "billing" in m["keyword"].lower()), None)
-        order_module = next((m for m in selected_modules if "order" in m["keyword"].lower() or "cart" in m["keyword"].lower() or "purchase" in m["keyword"].lower()), None)
-        product_module = next((m for m in selected_modules if "product" in m["keyword"].lower() or "item" in m["keyword"].lower() or "catalog" in m["keyword"].lower()), None)
-        notification_module = next((m for m in selected_modules if "notification" in m["keyword"].lower() or "email" in m["keyword"].lower() or "message" in m["keyword"].lower()), None)
-        api_module = next((m for m in selected_modules if "api" in m["keyword"].lower() or "controller" in m["keyword"].lower() or "endpoint" in m["keyword"].lower() or "web" in m["keyword"].lower()), None)
-        
-        # PATRÓN 1: API/Controller recibe peticiones y delega a módulos de negocio
-        if api_module:
-            api_id = api_module["name"].lower().replace(" ", "_").replace("-", "_")
-            # API se conecta con 2-3 módulos principales
-            business_modules_list = [m for m in [user_module, order_module, product_module, payment_module] if m and m != api_module]
-            for module in business_modules_list[:3]:
-                module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({api_id}, {module_id}, "Hace llamadas a", "JSON/HTTP")
-"""
-        
-        # PATRÓN 2: Auth valida peticiones de otros módulos (flujo coherente)
-        if auth_module:
-            auth_id = auth_module["name"].lower().replace(" ", "_").replace("-", "_")
-            # Solo módulos que necesitan autenticación
-            modules_needing_auth = [user_module, order_module, payment_module]
-            for module in modules_needing_auth:
-                if module and module != auth_module:
-                    module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                    diagram += f"""    Rel({module_id}, {auth_id}, "Valida credenciales usando", "JWT/OAuth")
-"""
-        
-        # PATRÓN 3: Order/Purchase flujo coherente (Order → User, Product, Payment)
-        if order_module:
-            order_id = order_module["name"].lower().replace(" ", "_").replace("-", "_")
-            if user_module:
-                user_id = user_module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({order_id}, {user_id}, "Obtiene datos cliente", "Query")
-"""
-            if product_module:
-                product_id = product_module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({order_id}, {product_id}, "Consulta disponibilidad", "Query")
-"""
-            if payment_module:
-                payment_id = payment_module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({order_id}, {payment_id}, "Procesa pago", "Sync call")
-"""
-        
-        # PATRÓN 4: Notifications recibe eventos de otros módulos (flujo async)
-        if notification_module:
-            notif_id = notification_module["name"].lower().replace(" ", "_").replace("-", "_")
-            event_sources = [m for m in [order_module, payment_module, user_module] if m]
-            for module in event_sources[:2]:  # Solo 2 para no saturar
-                module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({module_id}, {notif_id}, "Publica evento", "Message Queue")
+        diagram += f"""    Rel(user, {app_id}, "{action}", "{tech}")
 """
     
-    else:
-        # Relaciones tradicionales por capas
-        if is_gui_app or is_mobile_app:
-            interaction_type = "Interacción GUI" if is_gui_app else "Interacción Mobile"
-            main_container = "gui" if is_gui_app else "mobile"
-            diagram += f"""    Rel(user, {main_container}, "{interaction_type}", "Clicks/Eventos")
+    # 2. Aplicación → Database (si existe)
+    if db_container and app_containers:
+        for app in app_containers:
+            app_id = app["id"]
+            diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/JDBC")
 """
-        else:
-            diagram += """    Rel(user, api, "Envía peticiones HTTP", "JSON/REST")
+    
+    # 3. Aplicación → Cache (si existe)
+    if cache_container and app_containers:
+        main_app_id = app_containers[0]["id"]
+        diagram += f"""    Rel({main_app_id}, cache, "Lee/Escribe cache", "TCP/IP")
 """
-        
-        main_container_var = "gui" if is_gui_app else ("mobile" if is_mobile_app else "api")
-        services_count = layers.get("application", {}).get("count", 0)
-        repos_count = layers.get("infrastructure", {}).get("count", 0)
-        
-        if services_count > 0:
-            diagram += f"""    Rel({main_container_var}, business, "Invoca", "llamadas internas")
-"""
-        if repos_count > 0:
-            if services_count > 0:
-                diagram += """    Rel(business, data, "Usa", "operaciones CRUD")
-"""
-            diagram += """    Rel(data, database, "Lee/Escribe", "SQL")
-"""
-        else:
-            diagram += f"""    Rel({main_container_var}, database, "Lee/Escribe", "SQL")
+    
+    # 4. Aplicación → Message Queue (si existe)
+    if mq_container and app_containers:
+        main_app_id = app_containers[0]["id"]
+        diagram += f"""    Rel({main_app_id}, message_queue, "Publica/Consume mensajes", "AMQP/Kafka")
 """
     
     return diagram
@@ -648,7 +690,7 @@ def _make_safe_mermaid_id(name):
 
 
 def generate_c3_diagram(analysis):
-    """Genera diagrama C3 (Componentes) - Compatible con cualquier lenguaje"""
+    """Genera diagrama C3 (Componentes) - Muestra arquitectura interna de LA APLICACIÓN PRINCIPAL"""
     
     project_name = analysis.get("project_name", "Sistema")
     project_type = analysis.get("project_type", "unknown")
@@ -657,32 +699,20 @@ def generate_c3_diagram(analysis):
     technologies = analysis.get("technologies", {})
     components = analysis.get("components_detected", [])
     
-    # Detectar tipo de aplicación
-    is_gui_app = project_type == "gui-application"
-    is_mobile_app = project_type == "mobile-app"
+    # Detectar contenedor principal usando la misma lógica que C2
+    containers = _detect_containers(analysis)
+    main_container = next((c for c in containers if c["type"] == "application"), None)
     
-    # Backend/Frontend tech según tipo
-    if is_gui_app:
-        main_tech = ", ".join(technologies.get("frontend", ["GUI Framework"]))
-        container_name = "Interfaz Gráfica"
-    elif is_mobile_app:
-        main_tech = ", ".join(technologies.get("frontend", ["Mobile Framework"]))
-        container_name = "Aplicación Mobile"
-    else:
-        backend_tech_list = technologies.get("backend", [])
-        if not backend_tech_list:
-            type_tech_map = {
-                "spring-boot": ["Spring Boot"],
-                "django": ["Django"],
-                "fastapi": ["FastAPI"],
-                "nodejs": ["Node.js"],
-                "dotnet": [".NET Core"],
-                "go": ["Go"],
-                "rust": ["Rust"]
-            }
-            backend_tech_list = type_tech_map.get(project_type, ["Backend"])
-        main_tech = ", ".join(backend_tech_list)
-        container_name = "API Backend"
+    if not main_container:
+        # Fallback si no detecta contenedor
+        main_container = {
+            "name": "Aplicación Principal",
+            "technology": ", ".join(technologies.get("backend", ["Backend"]) + technologies.get("frontend", [])),
+            "description": "Sistema principal"
+        }
+    
+    container_name = main_container["name"]
+    container_tech = main_container["technology"]
     
     # Detectar patrón principal
     main_pattern = "Layered Architecture"
@@ -695,315 +725,186 @@ title: Sistema {project_name} - Diagrama C3 (Componentes)
 C4Component
     title Diagrama de Componentes - {project_name} ({main_pattern})
     
-    Container_Boundary(api, "{container_name} - {main_tech}") {{
+    Container_Boundary(container, "{container_name}") {{
 """
     
     has_components = False
     
-    # NUEVO: Escalar límites según tamaño del proyecto (OPCIÓN A - aumentado)
+    # Límite simplificado: 5-6 componentes por capa máximo
     total_files = analysis.get("total_files", 0)
-    if total_files < 50:
-        comp_limit_per_layer = 8
-    elif total_files < 200:
-        comp_limit_per_layer = 12
-    else:
-        comp_limit_per_layer = 18
+    comp_limit_per_layer = 6 if total_files > 100 else 5
     
-    # Presentation Layer Components
+    # CAPA 1: Presentation/UI Layer (Controllers, Windows, Screens)
+    presentation_comps = []
     if layers.get("presentation", {}).get("count", 0) > 0:
         has_components = True
-        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
-        all_pres_comps = layers["presentation"]["components"]
+        all_pres = layers["presentation"]["components"]
         
-        # FILTRAR: eliminar tests y duplicados
-        filtered_pres = []
+        # Filtrar tests y duplicados
+        filtered = [c for c in all_pres if "test" not in c.lower()]
         seen = set()
-        for comp in all_pres_comps:
-            comp_lower = comp.lower()
-            if "test" not in comp_lower and comp not in seen:
-                filtered_pres.append(comp)
-                seen.add(comp)
+        for c in filtered:
+            if c not in seen:
+                presentation_comps.append(c)
+                seen.add(c)
         
+        # Ordenar por importancia si está disponible
         if "important_components" in analysis and analysis["important_components"]:
-            pres_important = [c for c in analysis["important_components"] if any(pc in c["component"] for pc in filtered_pres)]
-            pres_sorted = [c["component"] for c in pres_important]
-            pres_sorted.extend([c for c in filtered_pres if c not in pres_sorted])
-            presentation_comps = pres_sorted[:comp_limit_per_layer]
-        else:
-            presentation_comps = filtered_pres[:comp_limit_per_layer]
+            important_names = [comp["component"] for comp in analysis["important_components"]]
+            presentation_comps.sort(key=lambda x: important_names.index(x) if x in important_names else 999)
         
-        if is_gui_app:
-            # Detectar framework GUI específico
-            technologies = analysis.get("technologies", {})
-            frontend_list = technologies.get("frontend", [])
-            backend_list = technologies.get("backend", [])
-            all_tech = ", ".join(frontend_list + backend_list)
-            
-            if "PyQt" in all_tech or "Qt" in all_tech:
-                gui_tech = "PyQt5/Qt Widget"
-                window_type = "Qt Window"
-            elif "Tkinter" in all_tech:
-                gui_tech = "Tkinter Widget"
-                window_type = "Tk Window"
-            elif "JavaFX" in all_tech or "Swing" in all_tech:
-                gui_tech = "JavaFX/Swing Component"
-                window_type = "Java GUI"
-            elif "WPF" in all_tech or "WinForms" in all_tech:
-                gui_tech = "WPF/WinForms Control"
-                window_type = ".NET GUI"
-            else:
-                gui_tech = "GUI Window"
-                window_type = "Window/Widget"
-            
-            diagram += f"""        
-        Component(windows, "Ventanas Principales", "{gui_tech}", "Ventanas y diálogos de la aplicación")
+        presentation_comps = presentation_comps[:comp_limit_per_layer]
+        
+        # Detectar tecnología UI
+        is_gui = "PyQt" in container_tech or "Tkinter" in container_tech or "Qt" in container_tech
+        is_mobile = "Swift" in container_tech or "Kotlin" in container_tech or "Flutter" in container_tech
+        
+        if is_gui:
+            ui_tech = "PyQt5" if "PyQt" in container_tech else "Tkinter" if "Tkinter" in container_tech else "Qt"
+            diagram += f"""        Component(ui_layer, "Interfaz Gráfica", "{ui_tech}", "Ventanas y widgets de la aplicación")
 """
-            # Mostrar más componentes para proyectos grandes
-            max_show = min(len(presentation_comps), comp_limit_per_layer)
-            for comp in presentation_comps[:max_show]:
-                comp_name = comp.replace(".py", "").replace(".ui", "").replace(".java", "").replace(".cs", "")
+            for i, comp in enumerate(presentation_comps[:4]):  # Max 4 ejemplos
+                comp_name = comp.replace(".py", "").replace(".ui", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "{window_type}", "Componente visual")
+                diagram += f"""        Component({safe_name}, "{comp_name}", "Window/Dialog", "Componente visual")
 """
-        elif is_mobile_app:
-            diagram += """        
-        Component(screens, "Pantallas", "Mobile", "Pantallas de la aplicación mobile")
+        elif is_mobile:
+            diagram += """        Component(screens, "Pantallas", "Mobile", "Pantallas de la aplicación")
 """
-            max_show = min(len(presentation_comps), comp_limit_per_layer)
-            for comp in presentation_comps[:max_show]:
-                comp_name = comp.replace(".swift", "").replace(".kt", "").replace(".dart", "").replace(".java", "")
+            for i, comp in enumerate(presentation_comps[:4]):
+                comp_name = comp.replace(".swift", "").replace(".kt", "").replace(".dart", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "Screen", "Pantalla específica")
+                diagram += f"""        Component({safe_name}, "{comp_name}", "Screen", "Pantalla")
 """
         else:
-            # Determinar tecnología del controller desde el análisis
-            technologies = analysis.get("technologies", {})
-            backend_list = technologies.get("backend", [])
-            backend_str = ", ".join(backend_list) if backend_list else ""
-            
-            if backend_str and "Spring" in backend_str:
-                controller_tech = "Spring MVC Controller"
-            elif backend_str and "Django" in backend_str:
+            # Web API - Controllers
+            controller_tech = "REST Controller"
+            if "Spring" in container_tech:
+                controller_tech = "Spring MVC"
+            elif "Django" in container_tech:
                 controller_tech = "Django View"
-            elif backend_str and "FastAPI" in backend_str:
-                controller_tech = "FastAPI Endpoint"
-            elif backend_str and ("Express" in backend_str or "Node" in backend_str):
-                controller_tech = "Express Route"
-            else:
-                controller_tech = "REST Controller"
+            elif "FastAPI" in container_tech:
+                controller_tech = "FastAPI"
+            elif "Express" in container_tech:
+                controller_tech = "Express"
             
-            diagram += f"""        
-        Component(controllers, "Controllers", "{controller_tech}", "Maneja peticiones HTTP y enruta a servicios")
+            diagram += f"""        Component(controllers, "Controllers", "{controller_tech}", "Endpoints HTTP")
 """
-            max_show = min(len(presentation_comps), comp_limit_per_layer)
-            for comp in presentation_comps[:max_show]:
-                comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
+            for i, comp in enumerate(presentation_comps[:4]):
+                comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                # Nombre más funcional
-                if "controller" in comp_name.lower():
-                    friendly_name = comp_name.replace("Controller", " API").replace("controller", " API")
-                else:
-                    friendly_name = f"{comp_name} Endpoint"
-                diagram += f"""        Component({safe_name}, "{friendly_name}", "{controller_tech}", "Endpoint REST")
+                diagram += f"""        Component({safe_name}, "{comp_name}", "Endpoint", "API REST")
 """
     
-    # Application Layer Components
+    # CAPA 2: Application/Business Logic Layer
+    application_comps = []
     if layers.get("application", {}).get("count", 0) > 0:
         has_components = True
-        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
-        all_app_comps = layers["application"]["components"]
+        all_app = layers["application"]["components"]
         
-        # FILTRAR: eliminar tests, main class, config y duplicados
-        filtered_app = []
+        # Filtrar tests, config, main
+        exclude = ["test", "main", "config", "application"]
+        filtered = [c for c in all_app if not any(e in c.lower() for e in exclude)]
         seen = set()
-        exclude_patterns = ["test", "application", "main", "config", "configuration"]
-        for comp in all_app_comps:
-            comp_lower = comp.lower()
-            if not any(pattern in comp_lower for pattern in exclude_patterns) and comp not in seen:
-                filtered_app.append(comp)
-                seen.add(comp)
+        for c in filtered:
+            if c not in seen:
+                application_comps.append(c)
+                seen.add(c)
         
-        if "important_components" in analysis and analysis["important_components"]:
-            app_important = [c for c in analysis["important_components"] if any(ac in c["component"] for ac in filtered_app)]
-            app_sorted = [c["component"] for c in app_important]
-            app_sorted.extend([c for c in filtered_app if c not in app_sorted])
-            application_comps = app_sorted[:comp_limit_per_layer]
-        else:
-            application_comps = filtered_app[:comp_limit_per_layer]
+        application_comps = application_comps[:comp_limit_per_layer]
+        
         diagram += """
-        Component(services, "Services", "Business Logic", "Implementa lógica de negocio")
+        Component(services, "Services", "Business Logic", "Lógica de negocio")
 """
-        max_show = min(len(application_comps), comp_limit_per_layer)
-        for comp in application_comps[:max_show]:
-            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
+        for i, comp in enumerate(application_comps[:3]):  # Max 3 ejemplos
+            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
             diagram += f"""        Component({safe_name}, "{comp_name}", "Service", "Lógica de negocio")
 """
     
-    # Domain Layer Components
+    # CAPA 3: Domain Layer (Entities/Models)
+    domain_comps = []
     if layers.get("domain", {}).get("count", 0) > 0:
         has_components = True
-        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
-        all_domain_comps = layers["domain"]["components"]
+        all_domain = layers["domain"]["components"]
         
-        # FILTRAR: eliminar duplicados
-        filtered_domain = []
-        seen = set()
-        for comp in all_domain_comps:
-            if comp not in seen:
-                filtered_domain.append(comp)
-                seen.add(comp)
+        filtered = list(set(all_domain))[:comp_limit_per_layer]
+        domain_comps = filtered
         
-        if "important_components" in analysis and analysis["important_components"]:
-            domain_important = [c for c in analysis["important_components"] if any(dc in c["component"] for dc in filtered_domain)]
-            domain_sorted = [c["component"] for c in domain_important]
-            domain_sorted.extend([c for c in filtered_domain if c not in domain_sorted])
-            domain_comps = domain_sorted[:comp_limit_per_layer]
-        else:
-            domain_comps = filtered_domain[:comp_limit_per_layer]
         diagram += """
-        Component(models, "Domain Models", "Entities", "Representan conceptos del negocio")
+        Component(models, "Models", "Domain", "Entidades del dominio")
 """
-        max_show = min(len(domain_comps), comp_limit_per_layer)
-        for comp in domain_comps[:max_show]:
-            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
+        for i, comp in enumerate(domain_comps[:3]):
+            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Entity", "Modelo de dominio")
+            diagram += f"""        Component({safe_name}, "{comp_name}", "Entity", "Entidad")
 """
     
-    # Infrastructure Layer Components
+    # CAPA 4: Infrastructure/Data Access Layer
+    infra_comps = []
     if layers.get("infrastructure", {}).get("count", 0) > 0:
         has_components = True
-        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
-        all_infra_comps = layers["infrastructure"]["components"]
+        all_infra = layers["infrastructure"]["components"]
         
-        # FILTRAR: eliminar duplicados
-        filtered_infra = []
-        seen = set()
-        for comp in all_infra_comps:
-            if comp not in seen:
-                filtered_infra.append(comp)
-                seen.add(comp)
+        filtered = list(set(all_infra))[:comp_limit_per_layer]
+        infra_comps = filtered
         
-        if "important_components" in analysis and analysis["important_components"]:
-            infra_important = [c for c in analysis["important_components"] if any(ic in c["component"] for ic in filtered_infra)]
-            infra_sorted = [c["component"] for c in infra_important]
-            infra_sorted.extend([c for c in filtered_infra if c not in infra_sorted])
-            infra_comps = infra_sorted[:comp_limit_per_layer]
-        else:
-            infra_comps = filtered_infra[:comp_limit_per_layer]
         diagram += """
-        Component(repositories, "Repositories", "Data Access", "Abstrae acceso a base de datos")
+        Component(repositories, "Repositories", "Data Access", "Acceso a datos")
 """
-        max_show = min(len(infra_comps), comp_limit_per_layer)
-        for comp in infra_comps[:max_show]:
-            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
+        for i, comp in enumerate(infra_comps[:3]):
+            comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Repository", "Acceso a datos")
+            diagram += f"""        Component({safe_name}, "{comp_name}", "Repository", "Repositorio")
 """
     
-    # Fallback: Si no se detectaron capas, usar componentes generales
+    # Fallback si no hay capas detectadas
     if not has_components and len(components) > 0:
         diagram += """
-        Component(core, "Core Components", "Application", "Componentes principales del sistema")
+        Component(core, "Componentes Principales", "Application", "Módulos del sistema")
 """
-        for comp in components[:5]:
-            comp_name = comp.get("name", "component").replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
+        for comp in components[:4]:
+            comp_name = comp.get("name", "component").replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp_name)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Component", "Componente del sistema")
+            diagram += f"""        Component({safe_name}, "{comp_name}", "Component", "Módulo")
 """
     
     diagram += """    }
     
-    ContainerDb(database, "Database", "SQL", "Datos persistentes")
+    ContainerDb(database, "Database", "SQL", "Persistencia de datos")
     
 """
     
-    # Relaciones condicionales según capas detectadas
-    pres_count = layers.get("presentation", {}).get("count", 0)
-    app_count = layers.get("application", {}).get("count", 0)
-    domain_count = layers.get("domain", {}).get("count", 0)
-    infra_count = layers.get("infrastructure", {}).get("count", 0)
+    # Relaciones simplificadas - FLUJO ARQUITECTÓNICO ESTÁNDAR
+    pres_exists = len(presentation_comps) > 0
+    app_exists = len(application_comps) > 0
+    domain_exists = len(domain_comps) > 0
+    infra_exists = len(infra_comps) > 0
     
-    # Obtener componentes FILTRADOS para crear relaciones específicas
-    pres_comps = presentation_comps if layers.get("presentation", {}).get("count", 0) > 0 else []
-    app_comps = application_comps if layers.get("application", {}).get("count", 0) > 0 else []
-    domain_comps_list = domain_comps if layers.get("domain", {}).get("count", 0) > 0 else []
-    infra_comps_list = infra_comps if layers.get("infrastructure", {}).get("count", 0) > 0 else []
+    # Determinar componente de entrada
+    is_gui = "PyQt" in container_tech or "Tkinter" in container_tech
+    is_mobile = "Swift" in container_tech or "Kotlin" in container_tech
+    entry_point = "ui_layer" if is_gui else ("screens" if is_mobile else "controllers")
     
-    # 1. RELACIONES ENTRE CONTENEDORES PRINCIPALES
-    if pres_count > 0 and app_count > 0:
-        if is_gui_app or is_mobile_app:
-            pres_comp = "windows" if is_gui_app else "screens"
-            diagram += f"""    Rel({pres_comp}, services, "Invoca", "Eventos/Signals")
-"""
-        else:
-            diagram += """    Rel(controllers, services, "Invoca")
+    # Flujo básico según arquitectura detectada
+    if pres_exists and app_exists:
+        diagram += f"""    Rel({entry_point}, services, "Invoca")
 """
     
-    if app_count > 0 and domain_count > 0:
+    if app_exists and domain_exists:
         diagram += """    Rel(services, models, "Usa")
 """
     
-    if app_count > 0 and infra_count > 0:
-        diagram += """    Rel(services, repositories, "Accede a datos via")
+    if app_exists and infra_exists:
+        diagram += """    Rel(services, repositories, "Consulta")
 """
     
-    if infra_count > 0:
+    if infra_exists:
         diagram += """    Rel(repositories, database, "Lee/Escribe", "SQL")
 """
-    elif pres_count > 0:
-        if is_gui_app or is_mobile_app:
-            pres_comp = "windows" if is_gui_app else "screens"
-            diagram += f"""    Rel({pres_comp}, database, "Lee/Escribe", "SQL")
-"""
-        else:
-            diagram += """    Rel(controllers, database, "Lee/Escribe", "SQL")
-"""
-    
-    # 2. RELACIONES COHERENTES ENTRE COMPONENTES (siguiendo flujo arquitectónico)
-    
-    # FLUJO: Presentation → Application (cada controller invoca servicios relacionados)
-    if pres_count > 0 and app_count > 0:
-        # Conectar solo 2-3 componentes de presentación con sus servicios correspondientes
-        max_connections = min(len(pres_comps), 2)
-        
-        for i in range(max_connections):
-            if i < len(pres_comps) and i < len(app_comps):
-                pres_id = _make_safe_mermaid_id(pres_comps[i])
-                app_id = _make_safe_mermaid_id(app_comps[i])
-                diagram += f"""    Rel({pres_id}, {app_id}, "Invoca")
-"""
-    
-    # FLUJO: Application → Domain (servicios usan modelos relacionados)
-    if app_count > 0 and domain_count > 0:
-        max_connections = min(len(app_comps), 2)
-        
-        for i in range(max_connections):
-            if i < len(app_comps) and i < len(domain_comps_list):
-                app_id = _make_safe_mermaid_id(app_comps[i])
-                domain_id = _make_safe_mermaid_id(domain_comps_list[i])
-                diagram += f"""    Rel({app_id}, {domain_id}, "Usa")
-"""
-    
-    # FLUJO: Application → Infrastructure (servicios persisten via repositorios)
-    if app_count > 0 and infra_count > 0:
-        max_connections = min(len(app_comps), min(len(infra_comps_list), 2))
-        
-        for i in range(max_connections):
-            if i < len(app_comps) and i < len(infra_comps_list):
-                app_id = _make_safe_mermaid_id(app_comps[i])
-                infra_id = _make_safe_mermaid_id(infra_comps_list[i])
-                diagram += f"""    Rel({app_id}, {infra_id}, "Persiste via")
-"""
-    
-    # FLUJO: Infrastructure → Database (repositorios ejecutan queries)
-    if infra_count > 0:
-        max_connections = min(len(infra_comps_list), 3)
-        for i in range(max_connections):
-            if i < len(infra_comps_list):
-                infra_id = _make_safe_mermaid_id(infra_comps_list[i])
-                diagram += f"""    Rel({infra_id}, database, "Ejecuta SQL")
+    elif pres_exists and not app_exists:
+        # Arquitectura simple sin capas intermedias
+        diagram += f"""    Rel({entry_point}, database, "Lee/Escribe", "SQL")
 """
     
     return diagram

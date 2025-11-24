@@ -1,0 +1,443 @@
+{
+  "project": "spring-petclinic",
+  "summary": {
+    "total_nodes": 210,
+    "total_edges": 337,
+    "communities": 19,
+    "top_important": [
+      "BaseEntity",
+      "Serializable",
+      "org.junit.jupiter.api.Test"
+    ],
+    "top_bottlenecks": [
+      "BaseEntity",
+      "NamedEntity",
+      "Person"
+    ],
+    "top_hubs": [
+      "PostgresIntegrationTests.java",
+      "MySqlIntegrationTests.java",
+      "CrashControllerIntegrationTests.java"
+    ],
+    "description": "Sistema con 210 componentes organizados en 19 módulos"
+  },
+  "critical_nodes": {
+    "critical_nodes": [
+      {
+        "name": "BaseEntity",
+        "score": 0.026792310622556555,
+        "reason": "high_pagerank",
+        "description": "Componente central en el sistema"
+      },
+      {
+        "name": "Serializable",
+        "score": 0.026531095094534524,
+        "reason": "high_pagerank",
+        "description": "Componente central en el sistema"
+      },
+      {
+        "name": "org.junit.jupiter.api.Test",
+        "score": 0.015304771574007638,
+        "reason": "high_pagerank",
+        "description": "Componente central en el sistema"
+      },
+      {
+        "name": "NamedEntity",
+        "score": 0.013281987027293551,
+        "reason": "high_pagerank",
+        "description": "Componente central en el sistema"
+      },
+      {
+        "name": "Person",
+        "score": 0.010101642530981557,
+        "reason": "high_pagerank",
+        "description": "Componente central en el sistema"
+      }
+    ],
+    "count": 5,
+    "description": "Top 5 componentes críticos del sistema"
+  },
+  "most_critical_component": {
+    "name": "BaseEntity",
+    "dependencies": {
+      "target": "BaseEntity",
+      "dependencies": [
+        "Serializable"
+      ],
+      "count": 1,
+      "critical": [],
+      "description": "BaseEntity depende de 1 componentes"
+    },
+    "callers": {
+      "target": "BaseEntity",
+      "callers": [
+        "Person",
+        "NamedEntity",
+        "Visit"
+      ],
+      "count": 3,
+      "impact": "medium",
+      "description": "BaseEntity es usado por 3 componentes"
+    },
+    "impact": {
+      "node": "BaseEntity",
+      "direct_impact": [
+        "Person",
+        "NamedEntity",
+        "Visit"
+      ],
+      "indirect_impact": [
+        "Owner",
+        "PetType",
+        "Specialty",
+        "Vet",
+        "Pet"
+      ],
+      "total_affected": 8,
+      "risk_level": "medium",
+      "description": "Modificar BaseEntity afectaría 8 componentes"
+    }
+  },
+  "communities": {
+    "communities": [
+      {
+        "id": 0,
+        "components": [
+          "OwnerRepository.java",
+          "org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase.Replace",
+          "org.springframework.samples.petclinic.owner.PetType",
+          "PetTypeRepository.java",
+          "org.springframework.data.jpa.repository.JpaRepository",
+          "org.springframework.data.domain.Page",
+          "org.springframework.samples.petclinic.owner.PetTypeRepository",
+          "org.springframework.cache.annotation.Cacheable",
+          "org.springframework.transaction.annotation.Transactional",
+          "org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase",
+          "org.springframework.data.jpa.repository.Query",
+          "org.springframework.samples.petclinic.owner.Visit",
+          "ClinicServiceTests.java",
+          "org.springframework.samples.petclinic.owner.OwnerRepository",
+          "jakarta.annotation.Nonnull",
+          "org.springframework.boot.data.jpa.test.autoconfigure.DataJpaTest",
+          "org.springframework.samples.petclinic.owner.Pet",
+          "org.springframework.samples.petclinic.owner.Owner",
+          "VetRepository.java",
+          "org.springframework.data.repository.Repository",
+          "org.springframework.dao.DataAccessException"
+        ],
+        "size": 21
+      },
+      {
+        "id": 1,
+        "components": [
+          "org.springframework.samples.petclinic.model.BaseEntity",
+          "jakarta.persistence.Entity",
+          "org.springframework.core.style.ToStringCreator",
+          "NamedEntity.java",
+          "Person.java",
+          "org.springframework.util.Assert",
+          "jakarta.persistence.OrderBy",
+          "jakarta.persistence.Id",
+          "jakarta.persistence.MappedSuperclass",
+          "jakarta.validation.constraints.NotBlank",
+          "org.springframework.aot.hint.RuntimeHintsRegistrar",
+          "Owner.java",
+          "jakarta.validation.constraints.Pattern",
+          "jakarta.persistence.ManyToMany",
+          "jakarta.persistence.CascadeType",
+          "Vets.java",
+          "jakarta.xml.bind.annotation.XmlElement",
+          "jakarta.persistence.ManyToOne",
+          "org.springframework.samples.petclinic.vet.Vet",
+          "jakarta.persistence.Column",
+          "org.springframework.samples.petclinic.model.NamedEntity",
+          "org.springframework.aot.hint.RuntimeHints",
+          "jakarta.persistence.OneToMany",
+          "PetType.java",
+          "jakarta.persistence.Table",
+          "jakarta.persistence.GenerationType",
+          "EntityUtils.java",
+          "jakarta.persistence.GeneratedValue",
+          "BaseEntity.java",
+          "Specialty.java",
+          "org.springframework.orm.ObjectRetrievalFailureException",
+          "org.springframework.format.annotation.DateTimeFormat",
+          "jakarta.persistence.FetchType",
+          "jakarta.persistence.JoinTable",
+          "jakarta.persistence.JoinColumn",
+          "org.jspecify.annotations.Nullable",
+          "PetClinicRuntimeHints.java",
+          "Vet.java",
+          "Pet.java",
+          "Visit.java",
+          "org.springframework.samples.petclinic.model.Person",
+          "jakarta.xml.bind.annotation.XmlRootElement"
+        ],
+        "size": 42
+      },
+      {
+        "id": 2,
+        "components": [
+          "org.springframework.stereotype.Component",
+          "org.springframework.format.Formatter",
+          "PetTypeFormatter.java"
+        ],
+        "size": 3
+      },
+      {
+        "id": 3,
+        "components": [
+          "org.springframework.context.annotation.Bean",
+          "org.springframework.web.servlet.i18n.LocaleChangeInterceptor",
+          "org.springframework.context.annotation.Configuration",
+          "org.testcontainers.utility.DockerImageName",
+          "org.testcontainers.containers.MySQLContainer",
+          "org.springframework.web.servlet.config.annotation.InterceptorRegistry",
+          "org.springframework.web.servlet.i18n.SessionLocaleResolver",
+          "org.springframework.cache.annotation.EnableCaching",
+          "org.springframework.web.servlet.LocaleResolver",
+          "CacheConfiguration.java",
+          "org.springframework.boot.testcontainers.service.connection.ServiceConnection",
+          "MysqlTestApplication.java",
+          "org.springframework.web.servlet.config.annotation.WebMvcConfigurer",
+          "WebConfiguration.java",
+          "org.springframework.context.annotation.Profile",
+          "org.springframework.boot.cache.autoconfigure.JCacheManagerCustomizer"
+        ],
+        "size": 16
+      },
+      {
+        "id": 4,
+        "components": [
+          "org.springframework.core.env.ConfigurableEnvironment",
+          "org.testcontainers.junit.jupiter.Container",
+          "PostgresIntegrationTests.java",
+          "org.springframework.core.env.EnumerablePropertySource",
+          "org.springframework.core.env.PropertySource",
+          "org.springframework.boot.test.context.SpringBootTest.WebEnvironment",
+          "org.springframework.boot.test.context.SpringBootTest",
+          "org.springframework.boot.context.event.ApplicationPreparedEvent",
+          "org.springframework.context.ApplicationListener",
+          "org.testcontainers.junit.jupiter.Testcontainers",
+          "org.apache.commons.logging.Log",
+          "org.springframework.boot.test.web.server.LocalServerPort",
+          "org.springframework.http.RequestEntity",
+          "org.springframework.http.HttpStatus",
+          "org.springframework.test.context.ActiveProfiles",
+          "MySqlIntegrationTests.java",
+          "PetClinicIntegrationTests.java",
+          "org.springframework.samples.petclinic.vet.VetRepository",
+          "org.apache.commons.logging.LogFactory",
+          "org.junit.jupiter.api.BeforeAll",
+          "org.springframework.boot.builder.SpringApplicationBuilder",
+          "org.springframework.http.ResponseEntity",
+          "org.testcontainers.DockerClientFactory",
+          "org.springframework.boot.restclient.RestTemplateBuilder",
+          "org.springframework.web.client.RestTemplate"
+        ],
+        "size": 25
+      },
+      {
+        "id": 5,
+        "components": [
+          "org.springframework.context.annotation.ComponentScan",
+          "org.springframework.test.context.aot.DisabledInAotMode",
+          "org.springframework.validation.MapBindingResult",
+          "org.springframework.test.context.bean.override.mockito.MockitoBean",
+          "org.springframework.test.web.servlet.MockMvc",
+          "org.junit.jupiter.api.Assertions",
+          "org.mockito.junit.jupiter.MockitoExtension",
+          "org.springframework.beans.factory.annotation.Autowired",
+          "org.mockito.Mock",
+          "PetControllerTests.java",
+          "org.springframework.test.web.servlet.ResultActions",
+          "CrashControllerTests.java",
+          "org.junit.jupiter.api.Nested",
+          "org.springframework.context.annotation.FilterType",
+          "org.springframework.data.domain.PageImpl",
+          "org.springframework.data.domain.Pageable",
+          "VisitControllerTests.java",
+          "org.assertj.core.util.Lists",
+          "PetValidatorTests.java",
+          "org.springframework.test.web.servlet.request.MockMvcRequestBuilders",
+          "VetControllerTests.java",
+          "I18nPropertiesSyncTest.java",
+          "org.junit.jupiter.api.BeforeEach",
+          "org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest",
+          "org.junit.jupiter.api.condition.DisabledInNativeImage",
+          "OwnerControllerTests.java",
+          "VetTests.java",
+          "org.springframework.util.SerializationUtils",
+          "org.junit.jupiter.api.Test",
+          "PetTypeFormatterTests.java",
+          "org.junit.jupiter.api.extension.ExtendWith"
+        ],
+        "size": 31
+      },
+      {
+        "id": 6,
+        "components": [
+          "org.springframework.validation.beanvalidation.LocalValidatorFactoryBean",
+          "org.springframework.context.i18n.LocaleContextHolder",
+          "ValidatorTests.java",
+          "jakarta.validation.ConstraintViolation",
+          "jakarta.validation.Validator"
+        ],
+        "size": 5
+      },
+      {
+        "id": 7,
+        "components": [
+          "WelcomeController.java",
+          "VisitController.java",
+          "OwnerController.java",
+          "org.springframework.web.bind.WebDataBinder",
+          "org.springframework.web.servlet.mvc.support.RedirectAttributes",
+          "org.springframework.web.bind.annotation.RequestMapping",
+          "org.springframework.web.bind.annotation.GetMapping",
+          "PetController.java",
+          "CrashController.java",
+          "VetController.java",
+          "org.springframework.ui.Model",
+          "org.springframework.web.bind.annotation.PostMapping",
+          "org.springframework.web.bind.annotation.ModelAttribute",
+          "org.springframework.web.bind.annotation.RequestParam",
+          "org.springframework.ui.ModelMap",
+          "org.springframework.web.bind.annotation.PathVariable",
+          "org.springframework.web.bind.annotation.InitBinder",
+          "jakarta.validation.Valid",
+          "org.springframework.validation.BindingResult",
+          "org.springframework.web.servlet.ModelAndView",
+          "org.springframework.web.bind.annotation.ResponseBody",
+          "org.springframework.data.domain.PageRequest",
+          "org.springframework.stereotype.Controller"
+        ],
+        "size": 23
+      },
+      {
+        "id": 8,
+        "components": [
+          "BaseEntity",
+          "Serializable",
+          "NamedEntity",
+          "Owner",
+          "Visit",
+          "PetType",
+          "Specialty",
+          "Vet",
+          "Pet",
+          "Person"
+        ],
+        "size": 10
+      },
+      {
+        "id": 9,
+        "components": [
+          "org.springframework.beans.factory.annotation.Value",
+          "org.springframework.http.HttpMethod",
+          "org.springframework.http.HttpEntity",
+          "org.springframework.boot.resttestclient.autoconfigure.AutoConfigureTestRestTemplate",
+          "org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration",
+          "org.springframework.http.HttpHeaders",
+          "CrashControllerIntegrationTests.java",
+          "org.springframework.boot.resttestclient.TestRestTemplate",
+          "org.springframework.http.MediaType",
+          "org.springframework.boot.autoconfigure.SpringBootApplication",
+          "org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration",
+          "org.springframework.boot.SpringApplication",
+          "PetClinicApplication.java",
+          "org.springframework.core.ParameterizedTypeReference",
+          "org.springframework.boot.jdbc.autoconfigure.DataSourceTransactionManagerAutoConfiguration",
+          "org.springframework.context.annotation.ImportRuntimeHints"
+        ],
+        "size": 16
+      },
+      {
+        "id": 10,
+        "components": [
+          "package-info.java",
+          "org.jspecify.annotations.NullMarked"
+        ],
+        "size": 2
+      },
+      {
+        "id": 11,
+        "components": [
+          "PetClinicRuntimeHints",
+          "RuntimeHintsRegistrar"
+        ],
+        "size": 2
+      },
+      {
+        "id": 12,
+        "components": [
+          "WebConfiguration",
+          "WebMvcConfigurer"
+        ],
+        "size": 2
+      },
+      {
+        "id": 13,
+        "components": [
+          "Validator",
+          "PetValidator"
+        ],
+        "size": 2
+      },
+      {
+        "id": 14,
+        "components": [
+          "ApplicationListener",
+          "PropertiesLogger"
+        ],
+        "size": 2
+      },
+      {
+        "id": 15,
+        "components": [
+          "org.springframework.util.StringUtils",
+          "org.springframework.validation.Errors",
+          "PetValidator.java",
+          "org.springframework.validation.Validator"
+        ],
+        "size": 4
+      },
+      {
+        "id": 16,
+        "components": [
+          "Formatter",
+          "PetTypeFormatter"
+        ],
+        "size": 2
+      },
+      {
+        "id": 17,
+        "components": [
+          "service_container (Docker)"
+        ],
+        "size": 1
+      },
+      {
+        "id": 18,
+        "components": [
+          "database_SQL"
+        ],
+        "size": 1
+      }
+    ],
+    "count": 19,
+    "largest": 42,
+    "description": "Sistema organizado en 19 comunidades/módulos"
+  },
+  "tools_used": [
+    "get_dependencies",
+    "find_callers",
+    "get_module_structure",
+    "analyze_design_patterns",
+    "explore_impact",
+    "find_path",
+    "get_critical_nodes",
+    "get_communities",
+    "query_graph"
+  ]
+}

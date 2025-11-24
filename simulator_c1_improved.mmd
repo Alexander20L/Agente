@@ -1,0 +1,13 @@
+---
+title: Sistema simulator_resistance-main - Diagrama C1 (Contexto)
+---
+C4Context
+    title Diagrama de Contexto del Sistema - simulator_resistance-main
+
+    Person(user, "Usuario", "Interactúa con el sistema")
+
+    System(system, "simulator_resistance-main", "Sistema de software")
+    System_Ext(database, "Base de Datos", "Almacena datos persistentes")
+
+    Rel(user, system, "Usa", "Desktop Application")
+    Rel(system, database, "Lee/Escribe datos", "SQL/JDBC")

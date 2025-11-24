@@ -1,0 +1,16 @@
+---
+title: Sistema simulator_resistance-main - Diagrama C2 (Contenedores)
+---
+C4Container
+    title Diagrama de Contenedores - simulator_resistance-main
+
+    Person(user, "Usuario", "Usuario del sistema")
+    
+    Container_Boundary(system, "simulator_resistance-main") {
+        Container(desktop_app, "Desktop Application", "PyQt5", "Aplicación de escritorio con interfaz gráfica")
+    }
+    
+    ContainerDb(database, "Database", "SQL", "Almacena datos persistentes del sistema")
+    
+    Rel(user, desktop_app, "Usa", "Desktop Application")
+    Rel(desktop_app, database, "Lee y escribe datos", "SQL/JDBC")

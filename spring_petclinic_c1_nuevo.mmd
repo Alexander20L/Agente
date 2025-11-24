@@ -1,0 +1,14 @@
+﻿---
+title: Sistema spring-petclinic - Diagrama C1 (Contexto)
+---
+C4Context
+    title Diagrama de Contexto del Sistema - spring-petclinic
+
+    Person(user, "Veterinario/Recepcionista", "Gestiona informaci¾n de mascotas y due±os")
+
+    System(system, "spring-petclinic", "Expone API REST para operaciones CRUD | Gestiona l¾gica de negocio")
+    System_Ext(database, "Base de Datos", "Almacena datos persistentes")
+
+    Rel(user, system, "Usa", "Web Browser/HTTPS")
+    Rel(system, database, "Lee/Escribe datos", "SQL/JDBC")
+
