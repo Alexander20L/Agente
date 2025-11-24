@@ -103,3 +103,7 @@ config_users.backup.yaml
 
 # OS
 Thumbs.db
+
+# Deprecated files
+*.deprecated
+*.old
