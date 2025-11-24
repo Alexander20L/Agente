@@ -101,7 +101,7 @@ def show_login_page():
             password_input = st.text_input("🔒 Contraseña", type="password")
             login_button = st.form_submit_button("Iniciar Sesión", use_container_width=True)
             
-            if submit_button:
+            if login_button:
                 user = get_user(username_input)
                 
                 if user and verify_password(username_input, password_input):
