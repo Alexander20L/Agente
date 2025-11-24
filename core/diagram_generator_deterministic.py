@@ -11,27 +11,24 @@ def generate_c1_diagram(analysis):
     project_type = analysis.get("project_type", "unknown")
     responsibilities = analysis.get("system_responsibilities", [])
     components = analysis.get("components_detected", [])
+    business_modules = analysis.get("business_modules", [])
+    
+    # Detectar usuarios específicos desde los módulos
+    detected_users = _detect_users_from_modules(business_modules, components)
     
     # Inferir dominio de negocio desde nombres de entidades
-    domain_context = _infer_business_domain(project_name, components)
+    domain_context = _infer_business_domain(project_name, components, business_modules)
     
-    # Título y descripción mejorada
-    resp_text = " | ".join(responsibilities[:3]) if responsibilities else domain_context["default_description"]
+    # Detectar sistemas externos reales desde los módulos
+    external_systems = _detect_external_systems(business_modules, components)
     
-    # Nombres de actores según el dominio
-    user_name = domain_context.get("user_name", "Usuario")
-    user_desc = domain_context.get("user_desc", "Interactúa con el sistema")
+    # Generar descripción específica basada en módulos detectados
+    system_description = _generate_system_description(business_modules, responsibilities, domain_context)
     
     # Adaptar según tipo de proyecto
     is_gui_app = project_type == "gui-application"
     is_mobile_app = project_type == "mobile-app"
-    
-    # Detectar sistemas externos comunes
-    business_modules = analysis.get("business_modules", [])
-    has_email = any("mail" in m.get("keyword", "").lower() or "email" in m.get("keyword", "").lower() 
-                   for m in business_modules)
-    has_cache = any("cache" in m.get("keyword", "").lower() or "redis" in m.get("keyword", "").lower() 
-                   for m in business_modules)
+    is_compiler = project_type == "compiler"
     
     diagram = f"""---
 title: Sistema {project_name} - Diagrama C1 (Contexto)
@@ -39,52 +36,97 @@ title: Sistema {project_name} - Diagrama C1 (Contexto)
 C4Context
     title Diagrama de Contexto del Sistema - {project_name}
 
-    Person({user_name.lower().replace(" ", "_")}, "{user_name}", "{user_desc}")
+"""
     
-    System(system, "{project_name}", "{resp_text}")
+    # Agregar usuarios detectados
+    if detected_users:
+        for user in detected_users:
+            user_id = user["id"]
+            user_name = user["name"]
+            user_desc = user["description"]
+            diagram += f"""    Person({user_id}, "{user_name}", "{user_desc}")
+"""
+    else:
+        # Usuario genérico si no se detecta ninguno
+        default_user = domain_context.get("user_name", "Usuario")
+        default_desc = domain_context.get("user_desc", "Interactúa con el sistema")
+        diagram += f"""    Person(user, "{default_user}", "{default_desc}")
+"""
     
-    System_Ext(database, "Base de Datos", "Almacena datos persistentes")
+    # Sistema principal con descripción específica
+    diagram += f"""
+    System(system, "{project_name}", "{system_description}")
 """
     
     # Agregar sistemas externos detectados
-    if has_email:
-        diagram += """    System_Ext(email_system, "Email Service", "Envía notificaciones por correo")
+    if external_systems.get("has_database", True):
+        diagram += """    System_Ext(database, "Base de Datos", "Almacena datos persistentes")
 """
-    if has_cache:
-        diagram += """    System_Ext(cache_system, "Cache System", "Almacenamiento temporal de datos")
+    
+    for ext_sys in external_systems.get("systems", []):
+        sys_id = ext_sys["id"]
+        sys_name = ext_sys["name"]
+        sys_desc = ext_sys["description"]
+        diagram += f"""    System_Ext({sys_id}, "{sys_name}", "{sys_desc}")
 """
     
     diagram += """
 """
     
-    # Relaciones según tipo de aplicación
-    if is_gui_app or is_mobile_app:
-        interaction_type = "Interacción GUI" if is_gui_app else "Interacción Mobile"
-        diagram += f"""    Rel({user_name.lower().replace(" ", "_")}, system, "Usa", "{interaction_type}")
+    # Relaciones de usuarios con el sistema
+    if detected_users:
+        for user in detected_users:
+            user_id = user["id"]
+            action = user.get("action", "Usa")
+            if is_gui_app:
+                tech = "Desktop Application"
+            elif is_mobile_app:
+                tech = "Mobile App"
+            elif is_compiler:
+                tech = "Command Line"
+            else:
+                tech = "Web Browser/HTTPS"
+            diagram += f"""    Rel({user_id}, system, "{action}", "{tech}")
 """
     else:
-        diagram += f"""    Rel({user_name.lower().replace(" ", "_")}, system, "Usa", "HTTP/HTTPS")
+        # Relación genérica
+        if is_gui_app:
+            diagram += f"""    Rel(user, system, "Usa", "Desktop Application")
+"""
+        elif is_mobile_app:
+            diagram += f"""    Rel(user, system, "Usa", "Mobile App")
+"""
+        elif is_compiler:
+            diagram += f"""    Rel(user, system, "Ejecuta via", "Command Line/Terminal")
+"""
+        else:
+            diagram += f"""    Rel(user, system, "Usa", "Web Browser/HTTPS")
 """
     
-    diagram += """    Rel(system, database, "Lee/Escribe", "SQL")
+    # Relaciones con sistemas externos
+    if external_systems.get("has_database", True):
+        diagram += """    Rel(system, database, "Lee/Escribe datos", "SQL/JDBC")
 """
     
-    if has_email:
-        diagram += """    Rel(system, email_system, "Envía emails", "SMTP")
-"""
-    if has_cache:
-        diagram += """    Rel(system, cache_system, "Lee/Escribe cache", "Redis Protocol")
+    for ext_sys in external_systems.get("systems", []):
+        sys_id = ext_sys["id"]
+        rel_desc = ext_sys["relation"]
+        protocol = ext_sys["protocol"]
+        diagram += f"""    Rel(system, {sys_id}, "{rel_desc}", "{protocol}")
 """
     
     return diagram
 
 
-def _infer_business_domain(project_name, components):
+def _infer_business_domain(project_name, components, business_modules=None):
     """
     Infiere el dominio de negocio analizando nombres de componentes y proyecto
     """
     project_lower = project_name.lower()
     component_names = " ".join([c.get("name", "").lower() for c in components])
+    if business_modules:
+        module_names = " ".join([m.get("keyword", "").lower() for m in business_modules])
+        component_names += " " + module_names
     
     # Patrones de dominio
     domains = {
@@ -165,6 +207,154 @@ def _infer_business_domain(project_name, components):
         "user_desc": "Interactúa con el sistema",
         "default_description": "Sistema de software"
     }
+
+
+def _detect_users_from_modules(business_modules, components):
+    """Detecta tipos de usuarios específicos desde los módulos del proyecto"""
+    users = []
+    module_keywords = " ".join([m.get("keyword", "").lower() for m in business_modules])
+    
+    # Detectar diferentes tipos de usuarios
+    user_patterns = {
+        "admin": ("admin", "Administrator", "Administra el sistema y gestiona configuración"),
+        "customer": ("customer", "Customer/Client", "Usa los servicios principales del sistema"),
+        "employee": ("employee", "Employee/Staff", "Gestiona operaciones del negocio"),
+        "user": ("user", "User", "Usuario final del sistema"),
+        "vendor": ("vendor", "Vendor/Supplier", "Proveedor de productos o servicios"),
+        "manager": ("manager", "Manager", "Supervisa operaciones y aprueba transacciones"),
+    }
+    
+    detected = set()
+    for keyword, (user_id, user_name, user_desc) in user_patterns.items():
+        if keyword in module_keywords and keyword not in detected:
+            users.append({
+                "id": user_id,
+                "name": user_name,
+                "description": user_desc,
+                "action": "Gestiona" if keyword == "admin" else "Usa"
+            })
+            detected.add(keyword)
+    
+    return users[:2]  # Máximo 2 usuarios para no saturar el C1
+
+
+def _detect_external_systems(business_modules, components):
+    """Detecta sistemas externos reales desde los módulos"""
+    external_systems = {"systems": [], "has_database": True}
+    module_keywords = " ".join([m.get("keyword", "").lower() for m in business_modules])
+    
+    # Patrones de sistemas externos
+    external_patterns = {
+        "email": {
+            "keywords": ["mail", "email", "smtp", "notification"],
+            "system": {
+                "id": "email_system",
+                "name": "Email System",
+                "description": "Envía notificaciones por correo electrónico",
+                "relation": "Envía emails via",
+                "protocol": "SMTP"
+            }
+        },
+        "payment": {
+            "keywords": ["payment", "billing", "invoice", "stripe", "paypal"],
+            "system": {
+                "id": "payment_gateway",
+                "name": "Payment Gateway",
+                "description": "Procesa pagos y transacciones",
+                "relation": "Procesa pagos via",
+                "protocol": "HTTPS/REST"
+            }
+        },
+        "storage": {
+            "keywords": ["s3", "storage", "blob", "file_storage", "upload"],
+            "system": {
+                "id": "storage_service",
+                "name": "Cloud Storage",
+                "description": "Almacena archivos y recursos",
+                "relation": "Guarda/Lee archivos via",
+                "protocol": "S3 API/HTTPS"
+            }
+        },
+        "cache": {
+            "keywords": ["cache", "redis", "memcached"],
+            "system": {
+                "id": "cache_system",
+                "name": "Cache Service",
+                "description": "Almacenamiento en caché de datos",
+                "relation": "Lee/Escribe cache via",
+                "protocol": "Redis Protocol"
+            }
+        },
+        "sms": {
+            "keywords": ["sms", "twilio", "message"],
+            "system": {
+                "id": "sms_service",
+                "name": "SMS Service",
+                "description": "Envía mensajes SMS",
+                "relation": "Envía SMS via",
+                "protocol": "REST API"
+            }
+        },
+        "auth": {
+            "keywords": ["oauth", "auth0", "okta", "saml", "ldap"],
+            "system": {
+                "id": "auth_provider",
+                "name": "Authentication Provider",
+                "description": "Servicio de autenticación externo",
+                "relation": "Autentica usuarios via",
+                "protocol": "OAuth2/SAML"
+            }
+        },
+    }
+    
+    # Detectar qué sistemas externos existen
+    for pattern_name, pattern_data in external_patterns.items():
+        keywords = pattern_data["keywords"]
+        if any(kw in module_keywords for kw in keywords):
+            external_systems["systems"].append(pattern_data["system"])
+    
+    return external_systems
+
+
+def _generate_system_description(business_modules, responsibilities, domain_context):
+    """Genera una descripción específica del sistema basada en sus módulos"""
+    if not business_modules:
+        return domain_context.get("default_description", "Sistema de software")
+    
+    # Agrupar módulos por categoría
+    categories = {
+        "gestión": ["user", "customer", "employee", "admin", "account"],
+        "transacciones": ["payment", "order", "invoice", "billing", "transaction"],
+        "productos": ["product", "inventory", "catalog", "item"],
+        "comunicación": ["notification", "email", "message", "sms"],
+        "reportes": ["report", "analytics", "dashboard", "stats"],
+    }
+    
+    detected_categories = []
+    module_keywords = " ".join([m.get("keyword", "").lower() for m in business_modules[:10]])
+    
+    for category, keywords in categories.items():
+        if any(kw in module_keywords for kw in keywords):
+            detected_categories.append(category)
+    
+    # Generar descripción basada en categorías detectadas
+    if detected_categories:
+        if "transacciones" in detected_categories and "productos" in detected_categories:
+            return "Plataforma para gestión de productos y procesamiento de transacciones"
+        elif "gestión" in detected_categories and "transacciones" in detected_categories:
+            return "Sistema para gestionar usuarios y procesar transacciones del negocio"
+        elif "productos" in detected_categories:
+            return "Sistema para gestión de catálogo de productos e inventario"
+        elif "gestión" in detected_categories:
+            return "Plataforma para gestión de usuarios y operaciones administrativas"
+        else:
+            return f"Sistema para {detected_categories[0]} del negocio"
+    
+    # Fallback a responsabilidades o dominio
+    if responsibilities:
+        return " | ".join(responsibilities[:2])
+    
+    return domain_context.get("default_description", "Sistema de software")
 
 
 def generate_c2_diagram(analysis):
@@ -543,15 +733,37 @@ C4Component
             presentation_comps = filtered_pres[:comp_limit_per_layer]
         
         if is_gui_app:
-            diagram += """        
-        Component(windows, "Ventanas Principales", "GUI", "Ventanas y diálogos de la aplicación")
+            # Detectar framework GUI específico
+            technologies = analysis.get("technologies", {})
+            frontend_list = technologies.get("frontend", [])
+            backend_list = technologies.get("backend", [])
+            all_tech = ", ".join(frontend_list + backend_list)
+            
+            if "PyQt" in all_tech or "Qt" in all_tech:
+                gui_tech = "PyQt5/Qt Widget"
+                window_type = "Qt Window"
+            elif "Tkinter" in all_tech:
+                gui_tech = "Tkinter Widget"
+                window_type = "Tk Window"
+            elif "JavaFX" in all_tech or "Swing" in all_tech:
+                gui_tech = "JavaFX/Swing Component"
+                window_type = "Java GUI"
+            elif "WPF" in all_tech or "WinForms" in all_tech:
+                gui_tech = "WPF/WinForms Control"
+                window_type = ".NET GUI"
+            else:
+                gui_tech = "GUI Window"
+                window_type = "Window/Widget"
+            
+            diagram += f"""        
+        Component(windows, "Ventanas Principales", "{gui_tech}", "Ventanas y diálogos de la aplicación")
 """
             # Mostrar más componentes para proyectos grandes
             max_show = min(len(presentation_comps), comp_limit_per_layer)
             for comp in presentation_comps[:max_show]:
                 comp_name = comp.replace(".py", "").replace(".ui", "").replace(".java", "").replace(".cs", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "Window/Widget", "Componente visual")
+                diagram += f"""        Component({safe_name}, "{comp_name}", "{window_type}", "Componente visual")
 """
         elif is_mobile_app:
             diagram += """        

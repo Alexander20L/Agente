@@ -1048,25 +1048,40 @@ def detect_business_modules(project_path: str) -> list:
                 # Crear nombre descriptivo del módulo
                 module_display_name = folder_name.replace("_", " ").replace("-", " ").title()
                 
-                # Agregar sufijo descriptivo
+                # Agregar sufijo descriptivo (solo si no está ya en el nombre)
                 if "controller" in folder_name or "api" in folder_name:
-                    module_display_name += " API"
+                    if not module_display_name.endswith("API"):
+                        module_display_name += " API"
                 elif "service" in folder_name or "business" in folder_name:
-                    module_display_name += " Service"
+                    if not module_display_name.endswith("Service"):
+                        module_display_name += " Service"
                 elif "model" in folder_name or "entity" in folder_name:
-                    module_display_name += " Domain"
+                    if not module_display_name.endswith("Domain"):
+                        module_display_name += " Domain"
                 elif "repository" in folder_name or "dao" in folder_name:
-                    module_display_name += " Data Access"
+                    if not module_display_name.endswith("Data Access"):
+                        module_display_name += " Data Access"
                 elif "gui" in folder_name or "widget" in folder_name:
-                    module_display_name += " GUI"
+                    if not module_display_name.endswith("GUI"):
+                        module_display_name += " GUI"
                 elif "core" in folder_name:
-                    module_display_name += " Core"
+                    # Si el nombre ya es "Core", no agregar nada más
+                    if module_display_name == "Core":
+                        pass  # Mantener "Core"
+                    else:
+                        module_display_name += " Core"
                 elif "util" in folder_name or "helper" in folder_name:
-                    module_display_name += " Utils"
+                    # Si el nombre ya es "Utils" o "Util", no agregar nada más
+                    if module_display_name in ["Utils", "Util"]:
+                        module_display_name = "Utils"
+                    else:
+                        module_display_name += " Utils"
                 elif "backend" in folder_name:
-                    module_display_name += " Backend"
+                    if not module_display_name.endswith("Backend"):
+                        module_display_name += " Backend"
                 elif "frontend" in folder_name:
-                    module_display_name += " Frontend"
+                    if not module_display_name.endswith("Frontend"):
+                        module_display_name += " Frontend"
                 else:
                     module_display_name += " Module"
                 
