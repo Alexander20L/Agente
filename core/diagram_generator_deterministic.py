@@ -200,15 +200,17 @@ C4Container
     
     # NUEVO: Si hay módulos de negocio detectados, generar containers por módulo
     if len(business_modules) >= 3:  # Al menos 3 módulos para usar vista modular
-        # Escalar según tamaño del proyecto
+        # Escalar según tamaño del proyecto (OPCIÓN A - aumentado)
         if total_files < 50:
-            max_modules = 8
+            max_modules = 10
         elif total_files < 200:
-            max_modules = 15
+            max_modules = 18
         else:
-            max_modules = 25
+            max_modules = 30
         
-        selected_modules = business_modules[:max_modules]
+        # ORDENAR POR IMPORTANCIA: módulos con más archivos primero (son los centrales)
+        sorted_modules = sorted(business_modules, key=lambda m: m.get("files", 0), reverse=True)
+        selected_modules = sorted_modules[:max_modules]
         
         for module in selected_modules:
             module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
@@ -271,31 +273,87 @@ C4Container
     
     # Generar relaciones
     if len(business_modules) >= 3:
-        # Relaciones para vista modular: usuario usa los módulos principales
-        main_modules = business_modules[:min(5, len(business_modules))]
-        for module in main_modules:
+        selected_modules = business_modules[:max_modules] if 'max_modules' in locals() else business_modules[:15]
+        
+        # 1. USUARIO → MÓDULOS PRINCIPALES (solo user-facing)
+        # Filtrar módulos que NO son infraestructura interna
+        exclude_keywords = ["config", "model", "domain", "entity", "repository", "util", "helper", "test"]
+        user_facing = [m for m in selected_modules 
+                      if not any(kw in m["keyword"].lower() for kw in exclude_keywords)]
+        user_facing_modules = user_facing[:min(4, len(user_facing))]
+        
+        for module in user_facing_modules:
             module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
             diagram += f"""    Rel(user, {module_id}, "Usa", "HTTP/REST")
 """
         
-        # Módulos se conectan a la base de datos
-        for module in business_modules[:min(10, len(business_modules))]:
+        # 2. MÓDULOS → BASE DE DATOS (solo módulos con lógica de persistencia)
+        # Excluir config, model/domain (son POJOs), y test
+        db_exclude = ["config", "model", "domain", "entity", "test"]
+        data_modules = [m for m in selected_modules 
+                       if not any(kw in m["keyword"].lower() for kw in db_exclude)]
+        
+        for module in data_modules:
             module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
             diagram += f"""    Rel({module_id}, database, "Lee/Escribe", "SQL")
 """
         
-        # Relaciones entre módulos (algunos ejemplos)
-        if len(business_modules) >= 2:
-            # Ejemplo: auth se usa por otros módulos
-            auth_module = next((m for m in business_modules if "auth" in m["keyword"].lower()), None)
-            if auth_module:
-                auth_id = auth_module["name"].lower().replace(" ", "_").replace("-", "_")
-                for module in business_modules[:3]:
-                    if module != auth_module:
-                        module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                        diagram += f"""    Rel({module_id}, {auth_id}, "Autentica", "JWT")
+        # 3. RELACIONES COHERENTES ENTRE MÓDULOS (siguiendo flujo lógico)
+        
+        # Buscar módulos clave para establecer relaciones lógicas
+        auth_module = next((m for m in selected_modules if "auth" in m["keyword"].lower() or "login" in m["keyword"].lower() or "security" in m["keyword"].lower()), None)
+        user_module = next((m for m in selected_modules if "user" in m["keyword"].lower() or "account" in m["keyword"].lower() or "customer" in m["keyword"].lower()), None)
+        payment_module = next((m for m in selected_modules if "payment" in m["keyword"].lower() or "billing" in m["keyword"].lower()), None)
+        order_module = next((m for m in selected_modules if "order" in m["keyword"].lower() or "cart" in m["keyword"].lower() or "purchase" in m["keyword"].lower()), None)
+        product_module = next((m for m in selected_modules if "product" in m["keyword"].lower() or "item" in m["keyword"].lower() or "catalog" in m["keyword"].lower()), None)
+        notification_module = next((m for m in selected_modules if "notification" in m["keyword"].lower() or "email" in m["keyword"].lower() or "message" in m["keyword"].lower()), None)
+        api_module = next((m for m in selected_modules if "api" in m["keyword"].lower() or "controller" in m["keyword"].lower() or "endpoint" in m["keyword"].lower() or "web" in m["keyword"].lower()), None)
+        
+        # PATRÓN 1: API/Controller recibe peticiones y delega a módulos de negocio
+        if api_module:
+            api_id = api_module["name"].lower().replace(" ", "_").replace("-", "_")
+            # API se conecta con 2-3 módulos principales
+            business_modules = [m for m in [user_module, order_module, product_module, payment_module] if m and m != api_module]
+            for module in business_modules[:3]:
+                module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
+                diagram += f"""    Rel({api_id}, {module_id}, "Invoca", "Internal call")
 """
-                        break
+        
+        # PATRÓN 2: Auth valida peticiones de otros módulos (flujo coherente)
+        if auth_module:
+            auth_id = auth_module["name"].lower().replace(" ", "_").replace("-", "_")
+            # Solo módulos que necesitan autenticación
+            modules_needing_auth = [user_module, order_module, payment_module]
+            for module in modules_needing_auth:
+                if module and module != auth_module:
+                    module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
+                    diagram += f"""    Rel({module_id}, {auth_id}, "Valida tokens", "JWT")
+"""
+        
+        # PATRÓN 3: Order/Purchase flujo coherente (Order → User, Product, Payment)
+        if order_module:
+            order_id = order_module["name"].lower().replace(" ", "_").replace("-", "_")
+            if user_module:
+                user_id = user_module["name"].lower().replace(" ", "_").replace("-", "_")
+                diagram += f"""    Rel({order_id}, {user_id}, "Obtiene datos cliente", "Query")
+"""
+            if product_module:
+                product_id = product_module["name"].lower().replace(" ", "_").replace("-", "_")
+                diagram += f"""    Rel({order_id}, {product_id}, "Consulta disponibilidad", "Query")
+"""
+            if payment_module:
+                payment_id = payment_module["name"].lower().replace(" ", "_").replace("-", "_")
+                diagram += f"""    Rel({order_id}, {payment_id}, "Procesa pago", "Sync call")
+"""
+        
+        # PATRÓN 4: Notifications recibe eventos de otros módulos (flujo async)
+        if notification_module:
+            notif_id = notification_module["name"].lower().replace(" ", "_").replace("-", "_")
+            event_sources = [m for m in [order_module, payment_module, user_module] if m]
+            for module in event_sources[:2]:  # Solo 2 para no saturar
+                module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
+                diagram += f"""    Rel({module_id}, {notif_id}, "Publica evento", "Message Queue")
+"""
     
     else:
         # Relaciones tradicionales por capas
@@ -407,19 +465,37 @@ C4Component
     
     has_components = False
     
-    # NUEVO: Escalar límites según tamaño del proyecto
+    # NUEVO: Escalar límites según tamaño del proyecto (OPCIÓN A - aumentado)
     total_files = analysis.get("total_files", 0)
     if total_files < 50:
-        comp_limit_per_layer = 5
+        comp_limit_per_layer = 8
     elif total_files < 200:
-        comp_limit_per_layer = 10
+        comp_limit_per_layer = 12
     else:
-        comp_limit_per_layer = 15
+        comp_limit_per_layer = 18
     
     # Presentation Layer Components
     if layers.get("presentation", {}).get("count", 0) > 0:
         has_components = True
-        presentation_comps = layers["presentation"]["components"][:comp_limit_per_layer]
+        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
+        all_pres_comps = layers["presentation"]["components"]
+        
+        # FILTRAR: eliminar tests y duplicados
+        filtered_pres = []
+        seen = set()
+        for comp in all_pres_comps:
+            comp_lower = comp.lower()
+            if "test" not in comp_lower and comp not in seen:
+                filtered_pres.append(comp)
+                seen.add(comp)
+        
+        if "important_components" in analysis and analysis["important_components"]:
+            pres_important = [c for c in analysis["important_components"] if any(pc in c["component"] for pc in filtered_pres)]
+            pres_sorted = [c["component"] for c in pres_important]
+            pres_sorted.extend([c for c in filtered_pres if c not in pres_sorted])
+            presentation_comps = pres_sorted[:comp_limit_per_layer]
+        else:
+            presentation_comps = filtered_pres[:comp_limit_per_layer]
         
         if is_gui_app:
             diagram += """        
@@ -456,7 +532,26 @@ C4Component
     # Application Layer Components
     if layers.get("application", {}).get("count", 0) > 0:
         has_components = True
-        application_comps = layers["application"]["components"][:comp_limit_per_layer]
+        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
+        all_app_comps = layers["application"]["components"]
+        
+        # FILTRAR: eliminar tests, main class, config y duplicados
+        filtered_app = []
+        seen = set()
+        exclude_patterns = ["test", "application", "main", "config", "configuration"]
+        for comp in all_app_comps:
+            comp_lower = comp.lower()
+            if not any(pattern in comp_lower for pattern in exclude_patterns) and comp not in seen:
+                filtered_app.append(comp)
+                seen.add(comp)
+        
+        if "important_components" in analysis and analysis["important_components"]:
+            app_important = [c for c in analysis["important_components"] if any(ac in c["component"] for ac in filtered_app)]
+            app_sorted = [c["component"] for c in app_important]
+            app_sorted.extend([c for c in filtered_app if c not in app_sorted])
+            application_comps = app_sorted[:comp_limit_per_layer]
+        else:
+            application_comps = filtered_app[:comp_limit_per_layer]
         diagram += """
         Component(services, "Services", "Business Logic", "Implementa lógica de negocio")
 """
@@ -470,7 +565,24 @@ C4Component
     # Domain Layer Components
     if layers.get("domain", {}).get("count", 0) > 0:
         has_components = True
-        domain_comps = layers["domain"]["components"][:comp_limit_per_layer]
+        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
+        all_domain_comps = layers["domain"]["components"]
+        
+        # FILTRAR: eliminar duplicados
+        filtered_domain = []
+        seen = set()
+        for comp in all_domain_comps:
+            if comp not in seen:
+                filtered_domain.append(comp)
+                seen.add(comp)
+        
+        if "important_components" in analysis and analysis["important_components"]:
+            domain_important = [c for c in analysis["important_components"] if any(dc in c["component"] for dc in filtered_domain)]
+            domain_sorted = [c["component"] for c in domain_important]
+            domain_sorted.extend([c for c in filtered_domain if c not in domain_sorted])
+            domain_comps = domain_sorted[:comp_limit_per_layer]
+        else:
+            domain_comps = filtered_domain[:comp_limit_per_layer]
         diagram += """
         Component(models, "Domain Models", "Entities", "Representan conceptos del negocio")
 """
@@ -484,7 +596,24 @@ C4Component
     # Infrastructure Layer Components
     if layers.get("infrastructure", {}).get("count", 0) > 0:
         has_components = True
-        infra_comps = layers["infrastructure"]["components"][:comp_limit_per_layer]
+        # ORDENAR POR IMPORTANCIA: usar PageRank si está disponible
+        all_infra_comps = layers["infrastructure"]["components"]
+        
+        # FILTRAR: eliminar duplicados
+        filtered_infra = []
+        seen = set()
+        for comp in all_infra_comps:
+            if comp not in seen:
+                filtered_infra.append(comp)
+                seen.add(comp)
+        
+        if "important_components" in analysis and analysis["important_components"]:
+            infra_important = [c for c in analysis["important_components"] if any(ic in c["component"] for ic in filtered_infra)]
+            infra_sorted = [c["component"] for c in infra_important]
+            infra_sorted.extend([c for c in filtered_infra if c not in infra_sorted])
+            infra_comps = infra_sorted[:comp_limit_per_layer]
+        else:
+            infra_comps = filtered_infra[:comp_limit_per_layer]
         diagram += """
         Component(repositories, "Repositories", "Data Access", "Abstrae acceso a base de datos")
 """
@@ -518,6 +647,13 @@ C4Component
     domain_count = layers.get("domain", {}).get("count", 0)
     infra_count = layers.get("infrastructure", {}).get("count", 0)
     
+    # Obtener componentes FILTRADOS para crear relaciones específicas
+    pres_comps = presentation_comps if layers.get("presentation", {}).get("count", 0) > 0 else []
+    app_comps = application_comps if layers.get("application", {}).get("count", 0) > 0 else []
+    domain_comps_list = domain_comps if layers.get("domain", {}).get("count", 0) > 0 else []
+    infra_comps_list = infra_comps if layers.get("infrastructure", {}).get("count", 0) > 0 else []
+    
+    # 1. RELACIONES ENTRE CONTENEDORES PRINCIPALES
     if pres_count > 0 and app_count > 0:
         if is_gui_app or is_mobile_app:
             pres_comp = "windows" if is_gui_app else "screens"
@@ -527,7 +663,6 @@ C4Component
             diagram += """    Rel(controllers, services, "Invoca")
 """
     
-    # Solo crear relación si models existe
     if app_count > 0 and domain_count > 0:
         diagram += """    Rel(services, models, "Usa")
 """
@@ -546,6 +681,51 @@ C4Component
 """
         else:
             diagram += """    Rel(controllers, database, "Lee/Escribe", "SQL")
+"""
+    
+    # 2. RELACIONES COHERENTES ENTRE COMPONENTES (siguiendo flujo arquitectónico)
+    
+    # FLUJO: Presentation → Application (cada controller invoca servicios relacionados)
+    if pres_count > 0 and app_count > 0:
+        # Conectar solo 2-3 componentes de presentación con sus servicios correspondientes
+        max_connections = min(len(pres_comps), 2)
+        
+        for i in range(max_connections):
+            if i < len(pres_comps) and i < len(app_comps):
+                pres_id = _make_safe_mermaid_id(pres_comps[i])
+                app_id = _make_safe_mermaid_id(app_comps[i])
+                diagram += f"""    Rel({pres_id}, {app_id}, "Invoca")
+"""
+    
+    # FLUJO: Application → Domain (servicios usan modelos relacionados)
+    if app_count > 0 and domain_count > 0:
+        max_connections = min(len(app_comps), 2)
+        
+        for i in range(max_connections):
+            if i < len(app_comps) and i < len(domain_comps_list):
+                app_id = _make_safe_mermaid_id(app_comps[i])
+                domain_id = _make_safe_mermaid_id(domain_comps_list[i])
+                diagram += f"""    Rel({app_id}, {domain_id}, "Usa")
+"""
+    
+    # FLUJO: Application → Infrastructure (servicios persisten via repositorios)
+    if app_count > 0 and infra_count > 0:
+        max_connections = min(len(app_comps), min(len(infra_comps_list), 2))
+        
+        for i in range(max_connections):
+            if i < len(app_comps) and i < len(infra_comps_list):
+                app_id = _make_safe_mermaid_id(app_comps[i])
+                infra_id = _make_safe_mermaid_id(infra_comps_list[i])
+                diagram += f"""    Rel({app_id}, {infra_id}, "Persiste via")
+"""
+    
+    # FLUJO: Infrastructure → Database (repositorios ejecutan queries)
+    if infra_count > 0:
+        max_connections = min(len(infra_comps_list), 3)
+        for i in range(max_connections):
+            if i < len(infra_comps_list):
+                infra_id = _make_safe_mermaid_id(infra_comps_list[i])
+                diagram += f"""    Rel({infra_id}, database, "Ejecuta SQL")
 """
     
     return diagram
