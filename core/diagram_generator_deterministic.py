@@ -155,7 +155,7 @@ def _detect_database_container(technologies, components):
         }
     
     # Detectar por archivos comunes
-    db_files = [c for c in components if any(db in c.lower() for db in [".db", ".sqlite", "database", "schema.sql", "migrations"])]
+    db_files = [c for c in components if isinstance(c, str) and any(db in c.lower() for db in [".db", ".sqlite", "database", "schema.sql", "migrations"])]
     if db_files:
         return {
             "id": "database",
@@ -227,6 +227,7 @@ def generate_c1_diagram(analysis):
     is_gui_app = project_type == "gui-application"
     is_mobile_app = project_type == "mobile-app"
     is_compiler = project_type == "compiler"
+    is_cli_tool = project_type == "cli-tool"
     
     diagram = f"""---
 title: Sistema {project_name} - Diagrama C1 (Contexto)
@@ -294,7 +295,7 @@ C4Context
         elif is_mobile_app:
             diagram += f"""    Rel(user, system, "Usa", "Mobile App")
 """
-        elif is_compiler:
+        elif is_compiler or is_cli_tool:
             diagram += f"""    Rel(user, system, "Ejecuta via", "Command Line/Terminal")
 """
         else:

@@ -1117,7 +1117,7 @@ def analyze_project(zip_path: str):
         extract_dir = os.path.join(extract_dir, items[0])
 
     # Análisis base
-    containers, infra = detect_containers_and_infra(extract_dir)
+    containers, infra, containers_list = detect_containers_and_infra(extract_dir)
     component_data = detect_components(extract_dir)
     project_name = detect_project_name(extract_dir)
 
@@ -1133,6 +1133,8 @@ def analyze_project(zip_path: str):
         "relations_detected": component_data["relations"],
         "dockerfiles_found": len([c for c in containers if c["source"] == "Dockerfile"]),
         "infra_detected": infra,
+        "containers": containers_list,  # Para métricas en UI (antes vacío)
+        "components": component_data["components"],  # Para métricas en UI (antes vacío)
     }
 
     # Tipo de proyecto
@@ -1656,7 +1658,17 @@ def detect_containers_and_infra(root_path: str):
         else:
             c["confidence"] = "low"
 
-    return merged_containers, infra
+    # --- 11) Construir lista simplificada de containers para métricas ---
+    # Esta lista se usa en app.py para mostrar "Contenedores detectados: X"
+    containers_list = []
+    for c in merged_containers:
+        containers_list.append({
+            "name": c.get("tech", "Container"),
+            "type": c.get("type", "unknown"),
+            "technology": c.get("tech", "Unknown")
+        })
+
+    return merged_containers, infra, containers_list
 
 
 # ================================================================

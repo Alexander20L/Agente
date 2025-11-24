@@ -368,36 +368,5 @@ class DistributedSystemDetector:
         return mermaid
 
 
-def enhance_business_c4_with_distributed(business_c4_generator, project_path: str) -> Dict:
-    """
-    Enhance BusinessC4Generator with distributed system detection
-    
-    Usage:
-    >>> from core.business_c4_generator import BusinessC4Generator
-    >>> gen = BusinessC4Generator()
-    >>> result = enhance_business_c4_with_distributed(gen, project_path)
-    """
-    detector = DistributedSystemDetector()
-    
-    # Detect architecture type
-    arch_info = detector.detect_architecture_type(project_path)
-    
-    # Standard business C4 analysis
-    result = business_c4_generator.generate_business_c4(project_path)
-    
-    # Enhance with distributed info
-    result['architecture_type'] = arch_info['type']
-    result['distributed_info'] = arch_info
-    
-    # If microservices, regenerate C2 with service-oriented view
-    if arch_info['type'] in ['microservices', 'distributed']:
-        services = arch_info.get('services', [])
-        if services:
-            microservices_c2 = detector.generate_c2_for_microservices(services)
-            result['diagrams']['c2_microservices'] = microservices_c2
-            
-            # Add metadata
-            result['business_context']['architecture_style'] = arch_info['type']
-            result['business_context']['services_count'] = len(services)
-    
-    return result
+# REMOVED: enhance_business_c4_with_distributed()
+# Esta función legacy se eliminó junto con BusinessC4Generator

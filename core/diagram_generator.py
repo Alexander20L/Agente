@@ -5,7 +5,6 @@ Generador de Diagramas Mermaid (LEGACY)
    
    Las funciones principales han sido movidas a:
    - diagram_generator_deterministic.py (generación C1/C2/C3)
-   - business_c4_generator.py (enriquecimiento con IA)
    
    Este archivo se mantiene por compatibilidad con código legacy.
 """
