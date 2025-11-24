@@ -16,3 +16,6 @@ scipy
 
 # Opcional: visualización
 matplotlib
+
+# AI Classification
+groq>=0.4.0

@@ -17,6 +17,7 @@ from core.diagram_generator_deterministic import (
     generate_c2_diagram,
     generate_c3_diagram
 )
+from core.business_c4_generator import BusinessC4Generator
 from core.database import init_database, get_user, create_user, verify_password
 
 # Configuración de la página
@@ -273,6 +274,26 @@ with col1:
                     if analysis.get("error"):
                         st.error(f"❌ Error: {analysis['error']}")
                     else:
+                        # Enriquecer con contexto de negocio si está habilitado
+                        if use_business_ai and os.getenv('GROQ_API_KEY'):
+                            try:
+                                with st.spinner("🤖 Extrayendo contexto de negocio con IA..."):
+                                    business_gen = BusinessC4Generator()
+                                    enriched_result = business_gen.generate_business_c4(temp_dir)
+                                    
+                                    # Merge análisis estático + contexto de negocio
+                                    analysis['business_context'] = enriched_result['business_context']
+                                    analysis['enriched_diagrams'] = enriched_result['diagrams']
+                                    
+                                st.success("✨ Diagramas enriquecidos con contexto de negocio!")
+                            except Exception as e:
+                                st.warning(f"⚠️ No se pudo usar IA: {str(e)}\nUsando diagramas determinísticos.")
+                                analysis['business_context'] = None
+                                analysis['enriched_diagrams'] = None
+                        else:
+                            analysis['business_context'] = None
+                            analysis['enriched_diagrams'] = None
+                        
                         # Guardar en session state
                         st.session_state['analysis'] = analysis
                         st.session_state['project_name'] = uploaded_file.name.replace('.zip', '')
@@ -284,6 +305,17 @@ with col1:
 
 with col2:
     st.header("📊 Información del Proyecto")
+    
+    # Toggle para análisis de negocio IA
+    if os.getenv('GROQ_API_KEY'):
+        use_business_ai = st.checkbox(
+            "🤖 Usar análisis de contexto de negocio con IA",
+            value=True,
+            help="Enriquece diagramas con terminología de negocio del README y código (Groq Llama 3.1)"
+        )
+    else:
+        use_business_ai = False
+        st.info("💡 Configura GROQ_API_KEY en Secrets para habilitar análisis IA")
     
     if 'analysis' in st.session_state:
         analysis = st.session_state['analysis']
@@ -337,7 +369,12 @@ if 'analysis' in st.session_state:
         st.caption("Vista general del sistema y sus actores externos")
         
         try:
-            c1_code = generate_c1_diagram(analysis)
+            # Usar diagrama enriquecido si está disponible
+            if analysis.get('enriched_diagrams'):
+                c1_code = analysis['enriched_diagrams']['c1']
+                st.info("🎯 Diagrama enriquecido con contexto de negocio")
+            else:
+                c1_code = generate_c1_diagram(analysis)
             
             # Limpiar código (quitar frontmatter que causa problemas)
             c1_lines = c1_code.split('\n')
@@ -375,7 +412,12 @@ if 'analysis' in st.session_state:
         st.caption("Contenedores y sus relaciones dentro del sistema")
         
         try:
-            c2_code = generate_c2_diagram(analysis)
+            # Usar diagrama enriquecido si está disponible
+            if analysis.get('enriched_diagrams'):
+                c2_code = analysis['enriched_diagrams']['c2']
+                st.info("🎯 Diagrama enriquecido con contexto de negocio")
+            else:
+                c2_code = generate_c2_diagram(analysis)
             
             # Limpiar código (quitar frontmatter)
             c2_lines = c2_code.split('\n')
@@ -413,7 +455,12 @@ if 'analysis' in st.session_state:
         st.caption("Componentes internos y su arquitectura")
         
         try:
-            c3_code = generate_c3_diagram(analysis)
+            # Usar diagrama enriquecido si está disponible
+            if analysis.get('enriched_diagrams'):
+                c3_code = analysis['enriched_diagrams']['c3']
+                st.info("🎯 Diagrama enriquecido con contexto de negocio")
+            else:
+                c3_code = generate_c3_diagram(analysis)
             
             # Limpiar código (quitar frontmatter)
             c3_lines = c3_code.split('\n')
