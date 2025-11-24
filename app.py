@@ -9,16 +9,15 @@ import streamlit.components.v1 as components
 import os
 import json
 import tempfile
-import sqlite3
 from pathlib import Path
 from datetime import datetime
-import bcrypt
 from core.analyzer import analyze_project
 from core.diagram_generator_deterministic import (
     generate_c1_diagram,
     generate_c2_diagram,
     generate_c3_diagram
 )
+from core.database import init_database, get_user, create_user, verify_password
 
 # Configuración de la página
 st.set_page_config(
@@ -29,73 +28,9 @@ st.set_page_config(
 )
 
 # ============================================================================
-# SISTEMA DE AUTENTICACIÓN CON SQLITE
+# SISTEMA DE AUTENTICACIÓN (SQLite local / PostgreSQL producción)
 # ============================================================================
-
-def init_database():
-    """Inicializa la base de datos SQLite y crea las tablas necesarias"""
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    
-    # Crear tabla de usuarios
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT UNIQUE NOT NULL,
-            password TEXT NOT NULL,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    
-    # Verificar si existe el usuario admin
-    cursor.execute('SELECT username FROM users WHERE username = ?', ('admin',))
-    if not cursor.fetchone():
-        # Crear usuario admin por defecto
-        hashed_password = bcrypt.hashpw('admin123'.encode(), bcrypt.gensalt()).decode()
-        cursor.execute('''
-            INSERT INTO users (username, password, name, email)
-            VALUES (?, ?, ?, ?)
-        ''', ('admin', hashed_password, 'Administrador', 'admin@example.com'))
-        conn.commit()
-    
-    conn.close()
-
-def get_user(username):
-    """Obtiene un usuario de la base de datos"""
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT username, password, name, email FROM users WHERE username = ?', (username,))
-    user = cursor.fetchone()
-    conn.close()
-    
-    if user:
-        return {
-            'username': user[0],
-            'password': user[1],
-            'name': user[2],
-            'email': user[3]
-        }
-    return None
-
-def create_user(username, password, name, email):
-    """Crea un nuevo usuario en la base de datos"""
-    conn = sqlite3.connect('users.db')
-    cursor = conn.cursor()
-    
-    try:
-        hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-        cursor.execute('''
-            INSERT INTO users (username, password, name, email)
-            VALUES (?, ?, ?, ?)
-        ''', (username, hashed_password, name, email))
-        conn.commit()
-        conn.close()
-        return True
-    except sqlite3.IntegrityError:
-        conn.close()
-        return False  # Usuario ya existe
+# Las funciones están importadas desde core.database
 
 def register_user():
     """Formulario de registro de nuevos usuarios"""
@@ -166,10 +101,10 @@ def show_login_page():
             password_input = st.text_input("🔒 Contraseña", type="password")
             login_button = st.form_submit_button("Iniciar Sesión", use_container_width=True)
             
-            if login_button:
+            if submit_button:
                 user = get_user(username_input)
                 
-                if user and bcrypt.checkpw(password_input.encode(), user['password'].encode()):
+                if user and verify_password(username_input, password_input):
                     st.session_state['authentication_status'] = True
                     st.session_state['name'] = user['name']
                     st.session_state['username'] = user['username']
