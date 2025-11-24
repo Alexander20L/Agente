@@ -26,6 +26,13 @@ def generate_c1_diagram(analysis):
     is_gui_app = project_type == "gui-application"
     is_mobile_app = project_type == "mobile-app"
     
+    # Detectar sistemas externos comunes
+    business_modules = analysis.get("business_modules", [])
+    has_email = any("mail" in m.get("keyword", "").lower() or "email" in m.get("keyword", "").lower() 
+                   for m in business_modules)
+    has_cache = any("cache" in m.get("keyword", "").lower() or "redis" in m.get("keyword", "").lower() 
+                   for m in business_modules)
+    
     diagram = f"""---
 title: Sistema {project_name} - Diagrama C1 (Contexto)
 ---
@@ -37,7 +44,17 @@ C4Context
     System(system, "{project_name}", "{resp_text}")
     
     System_Ext(database, "Base de Datos", "Almacena datos persistentes")
+"""
     
+    # Agregar sistemas externos detectados
+    if has_email:
+        diagram += """    System_Ext(email_system, "Email Service", "Envía notificaciones por correo")
+"""
+    if has_cache:
+        diagram += """    System_Ext(cache_system, "Cache System", "Almacenamiento temporal de datos")
+"""
+    
+    diagram += """
 """
     
     # Relaciones según tipo de aplicación
@@ -50,6 +67,13 @@ C4Context
 """
     
     diagram += """    Rel(system, database, "Lee/Escribe", "SQL")
+"""
+    
+    if has_email:
+        diagram += """    Rel(system, email_system, "Envía emails", "SMTP")
+"""
+    if has_cache:
+        diagram += """    Rel(system, cache_system, "Lee/Escribe cache", "Redis Protocol")
 """
     
     return diagram
@@ -282,9 +306,20 @@ C4Container
                       if not any(kw in m["keyword"].lower() for kw in exclude_keywords)]
         user_facing_modules = user_facing[:min(4, len(user_facing))]
         
+        # Descripción específica según tipo de interacción
+        if is_gui_app:
+            rel_desc = "Interactúa con"
+            tech = "Desktop Application"
+        elif is_mobile_app:
+            rel_desc = "Usa la aplicación"
+            tech = "Mobile App"
+        else:
+            rel_desc = "Visita usando"
+            tech = "HTTPS"
+        
         for module in user_facing_modules:
             module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-            diagram += f"""    Rel(user, {module_id}, "Usa", "HTTP/REST")
+            diagram += f"""    Rel(user, {module_id}, "{rel_desc}", "{tech}")
 """
         
         # 2. MÓDULOS → BASE DE DATOS (solo módulos con lógica de persistencia)
@@ -295,7 +330,17 @@ C4Container
         
         for module in data_modules:
             module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-            diagram += f"""    Rel({module_id}, database, "Lee/Escribe", "SQL")
+            module_keyword = module["keyword"].lower()
+            
+            # Descripción específica según tipo de operación
+            if "read" in module_keyword or "query" in module_keyword:
+                operation = "Lee datos de"
+            elif "write" in module_keyword or "create" in module_keyword or "update" in module_keyword:
+                operation = "Escribe datos en"
+            else:
+                operation = "Lee y escribe en"
+            
+            diagram += f"""    Rel({module_id}, database, "{operation}", "SQL/JDBC")
 """
         
         # 3. RELACIONES COHERENTES ENTRE MÓDULOS (siguiendo flujo lógico)
@@ -313,10 +358,10 @@ C4Container
         if api_module:
             api_id = api_module["name"].lower().replace(" ", "_").replace("-", "_")
             # API se conecta con 2-3 módulos principales
-            business_modules = [m for m in [user_module, order_module, product_module, payment_module] if m and m != api_module]
-            for module in business_modules[:3]:
+            business_modules_list = [m for m in [user_module, order_module, product_module, payment_module] if m and m != api_module]
+            for module in business_modules_list[:3]:
                 module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                diagram += f"""    Rel({api_id}, {module_id}, "Invoca", "Internal call")
+                diagram += f"""    Rel({api_id}, {module_id}, "Hace llamadas a", "JSON/HTTP")
 """
         
         # PATRÓN 2: Auth valida peticiones de otros módulos (flujo coherente)
@@ -327,7 +372,7 @@ C4Container
             for module in modules_needing_auth:
                 if module and module != auth_module:
                     module_id = module["name"].lower().replace(" ", "_").replace("-", "_")
-                    diagram += f"""    Rel({module_id}, {auth_id}, "Valida tokens", "JWT")
+                    diagram += f"""    Rel({module_id}, {auth_id}, "Valida credenciales usando", "JWT/OAuth")
 """
         
         # PATRÓN 3: Order/Purchase flujo coherente (Order → User, Product, Payment)
@@ -519,14 +564,35 @@ C4Component
                 diagram += f"""        Component({safe_name}, "{comp_name}", "Screen", "Pantalla específica")
 """
         else:
-            diagram += """        
-        Component(controllers, "Controllers", "Presentation", "Maneja peticiones HTTP y enruta a servicios")
+            # Determinar tecnología del controller desde el análisis
+            technologies = analysis.get("technologies", {})
+            backend_list = technologies.get("backend", [])
+            backend_str = ", ".join(backend_list) if backend_list else ""
+            
+            if backend_str and "Spring" in backend_str:
+                controller_tech = "Spring MVC Controller"
+            elif backend_str and "Django" in backend_str:
+                controller_tech = "Django View"
+            elif backend_str and "FastAPI" in backend_str:
+                controller_tech = "FastAPI Endpoint"
+            elif backend_str and ("Express" in backend_str or "Node" in backend_str):
+                controller_tech = "Express Route"
+            else:
+                controller_tech = "REST Controller"
+            
+            diagram += f"""        
+        Component(controllers, "Controllers", "{controller_tech}", "Maneja peticiones HTTP y enruta a servicios")
 """
             max_show = min(len(presentation_comps), comp_limit_per_layer)
             for comp in presentation_comps[:max_show]:
                 comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "").replace(".cs", "").replace(".go", "").replace(".rs", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "Controller", "Endpoint específico")
+                # Nombre más funcional
+                if "controller" in comp_name.lower():
+                    friendly_name = comp_name.replace("Controller", " API").replace("controller", " API")
+                else:
+                    friendly_name = f"{comp_name} Endpoint"
+                diagram += f"""        Component({safe_name}, "{friendly_name}", "{controller_tech}", "Endpoint REST")
 """
     
     # Application Layer Components
