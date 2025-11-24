@@ -785,61 +785,6 @@ def _extract_system_responsibilities(project_type, components, layers):
     return responsibilities[:5]  # Top 5 responsibilities
 
 
-def build_knowledge_graph(analysis_result: dict):
-    """
-    Construye un Knowledge Graph (NetworkX) desde el análisis estático
-    Este es el puente entre análisis estático y representación en grafo
-    """
-    from core.knowledge_graph import KnowledgeGraph
-    
-    kg = KnowledgeGraph()
-    
-    # 1. Agregar componentes como nodos
-    components = analysis_result.get("components_detected", [])
-    for comp in components:
-        comp_name = comp.get("name", "unknown")
-        comp_type = comp.get("type", "unknown")
-        
-        kg.add_component(
-            name=comp_name,
-            container="main",  # TODO: inferir contenedor
-            comp_type=comp_type,
-            classes=comp.get("classes", []),
-            entry_points=comp.get("entry_points", []),
-            path=comp.get("path", "")
-        )
-    
-    # 2. Agregar relaciones como edges
-    relations = analysis_result.get("relations_detected", [])
-    for rel in relations:
-        from_node = rel.get("from", "")
-        to_node = rel.get("to", "")
-        rel_type = rel.get("type", "depends")
-        
-        # Solo agregar si ambos nodos existen
-        if from_node and to_node:
-            # Asegurar que los nodos existan
-            if from_node not in kg.graph.nodes():
-                kg.add_node(from_node, node_type="external")
-            if to_node not in kg.graph.nodes():
-                kg.add_node(to_node, node_type="external")
-            
-            kg.add_dependency(from_node, to_node, rel_type)
-    
-    # 3. Agregar contenedores como nodos especiales
-    containers = analysis_result.get("containers_detected", [])
-    for container in containers:
-        container_name = f"{container['type']}_{container['technology']}"
-        kg.add_node(
-            container_name,
-            node_type="container",
-            technology=container['technology'],
-            source=container['source']
-        )
-    
-    return kg
-
-
 def detect_actors(analysis_result: dict):
     """
     Detecta actores y sistemas externos de forma segura:
@@ -1218,11 +1163,7 @@ def analyze_project(zip_path: str):
         result["architectural_layers"]
     )
     
-    # 6. NUEVO: Construir Knowledge Graph y calcular métricas de importancia
-    result["knowledge_graph"] = build_knowledge_graph(result)
-    result["graph_metrics"] = result["knowledge_graph"].calculate_importance_metrics()
-    
-    # 7. NUEVO: Detectar módulos de negocio para C2 detallado
+    # 6. NUEVO: Detectar módulos de negocio para C2 detallado
     result["business_modules"] = detect_business_modules(extract_dir)
 
     return result
