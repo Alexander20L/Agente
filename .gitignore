@@ -56,6 +56,9 @@ analysis_*.json
 extended_test_summary.json
 multi_project_test_summary.json
 real_projects_test_summary.json
+*_analysis*.json
+*_analysis*.txt
+agent_exploration_report.json
 
 # Generated diagrams (keep only examples)
 *_c1.mmd
