@@ -1874,7 +1874,14 @@ def detect_components(root_path: str):
                     comp_type = t
                     break
             
-            # 1.5) Odoo/OpenERP specific components (override patterns)
+            # 1.5) Framework utilities GENERIC (before framework-specific checks)
+            # Estos son archivos de frameworks que NO deben ser clasificados por patrones
+            if file_lower in ["migration.py", "registry.py", "config.py", "setup.py"]:
+                comp_type = "utility"  # Framework core utilities (Django, Odoo, etc.)
+            elif file_lower in ["command.py", "loading.py", "conf.py", "deploy.py"]:
+                comp_type = "utility"  # CLI/setup utilities
+            
+            # 1.6) Odoo/OpenERP specific components (override patterns)
             # Detectar por ruta O por nombre de carpeta
             is_odoo = ("odoo" in root_path.lower() or "openerp" in root_path.lower() or 
                       "odoo" in dirpath.lower() or "openerp" in dirpath.lower())
@@ -1892,13 +1899,9 @@ def detect_components(root_path: str):
                     comp_type = "model"  # Modelo base ORM
                 elif file_lower in ["exceptions.py", "loglevels.py", "populate.py"]:
                     comp_type = "utility"  # Utilities/configuration, not services
-                # Framework/CLI utilities (NO son controllers ni services)
-                elif file_lower in ["migration.py", "module.py", "registry.py", "release.py"]:
-                    comp_type = "utility"  # Framework core utilities
-                elif file_lower in ["command.py", "deploy.py", "scaffold.py", "server.py"]:
-                    comp_type = "utility"  # CLI tools, not business services
-                elif file_lower in ["setup.py", "conf.py", "config.py", "loading.py"]:
-                    comp_type = "utility"  # Setup/configuration utilities
+                # Odoo-specific utilities (ya no incluyen registry, config, migration, setup, command)
+                elif file_lower in ["module.py", "release.py", "scaffold.py", "server.py"]:
+                    comp_type = "utility"  # Odoo framework-specific utilities
                 elif file_lower in ["cloc.py", "profiler.py", "report.py"]:
                     comp_type = "utility"  # Development/debug tools
 
