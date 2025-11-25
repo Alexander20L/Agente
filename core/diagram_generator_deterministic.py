@@ -4,6 +4,57 @@ Usa el análisis mejorado para crear diagramas Mermaid precisos
 """
 
 
+def _detect_module_dependencies(app_containers, modular_arch):
+    """
+    Detecta dependencias comunes entre módulos de negocio.
+    Retorna lista de relaciones con patrón: from → to
+    """
+    dependencies = []
+    arch_type = modular_arch.get("architecture_type")
+    container_names = {c["id"]: c["name"] for c in app_containers}
+    
+    # Dependencias comunes por tipo de framework
+    if arch_type == "odoo-modules":
+        common_deps = [
+            ("sale", "product", "Consulta catálogo", "Internal API"),
+            ("sale", "account", "Genera facturas", "Internal API"),
+            ("sale", "stock", "Reserva inventario", "Internal API"),
+            ("purchase", "stock", "Actualiza inventario", "Internal API"),
+            ("purchase", "account", "Registra pagos", "Internal API"),
+            ("mrp", "product", "Lee lista de materiales", "Internal API"),
+            ("mrp", "stock", "Consume materiales", "Internal API"),
+        ]
+    elif arch_type == "django-apps":
+        common_deps = [
+            ("orders", "products", "Consulta productos", "Django ORM"),
+            ("orders", "users", "Valida usuario", "Django ORM"),
+            ("cart", "products", "Agrega items", "Django ORM"),
+            ("checkout", "orders", "Crea pedido", "Django ORM"),
+            ("checkout", "payments", "Procesa pago", "Internal API"),
+        ]
+    elif arch_type == "nestjs-modules":
+        common_deps = [
+            ("orders", "products", "Consulta productos", "Dependency Injection"),
+            ("orders", "users", "Valida usuario", "Dependency Injection"),
+            ("auth", "users", "Autentica", "JWT"),
+        ]
+    else:
+        common_deps = []
+    
+    # Filtrar solo las dependencias donde ambos módulos existen
+    for from_mod, to_mod, desc, tech in common_deps:
+        if from_mod in container_names and to_mod in container_names:
+            dependencies.append({
+                "from": from_mod,
+                "to": to_mod,
+                "description": desc,
+                "tech": tech
+            })
+    
+    # Limitar a máximo 5 dependencias para no saturar
+    return dependencies[:5]
+
+
 def _detect_containers(analysis):
     """
     Detecta los CONTENEDORES reales del sistema (aplicaciones ejecutables)
@@ -833,11 +884,8 @@ C4Container
 """
     
     # RELACIONES entre contenedores
-    # 1. Usuario → Aplicación principal
+    # 1. Usuario → Aplicaciones (FIX: conectar a múltiples módulos en arquitecturas modulares)
     if app_containers:
-        main_app = app_containers[0]  # Primera aplicación (la principal)
-        app_id = main_app["id"]
-        
         # Determinar tecnología de interacción según tipo
         if project_type == "gui-application":
             tech = "Desktop Application"
@@ -852,7 +900,19 @@ C4Container
             tech = "HTTPS"
             action = "Usa"
         
-        diagram += f"""    Rel(user, {app_id}, "{action}", "{tech}")
+        # Detectar si es arquitectura modular
+        modular_arch = analysis.get("modular_architecture", {})
+        
+        if modular_arch.get("is_modular"):
+            # Usuario puede acceder a TODOS los módulos (máximo 3 conexiones visibles)
+            user_facing_modules = [c for c in app_containers if c["id"] not in ["framework_core", "other_modules"]][:3]
+            for module in user_facing_modules:
+                diagram += f"""    Rel(user, {module["id"]}, "{action}", "{tech}")
+"""
+        else:
+            # Aplicación tradicional: usuario conecta solo a la principal
+            main_app = app_containers[0]
+            diagram += f"""    Rel(user, {main_app["id"]}, "{action}", "{tech}")
 """
     
     # 1.5. Relaciones entre contenedores de aplicación
@@ -885,6 +945,12 @@ C4Container
                     if container["id"] != "framework_core" and container["id"] != "other_modules":
                         diagram += f"""    Rel({container["id"]}, framework_core, "Usa servicios base", "Framework API")
 """
+                
+                # FIX: Agregar dependencias inteligentes entre módulos
+                module_dependencies = _detect_module_dependencies(app_containers, modular_arch)
+                for dep in module_dependencies:
+                    diagram += f"""    Rel({dep["from"]}, {dep["to"]}, "{dep["description"]}", "{dep["tech"]}")
+"""
             else:
                 # Si no hay core, mostrar interdependencias entre primeros módulos
                 for i in range(min(3, len(app_containers) - 1)):
@@ -894,18 +960,24 @@ C4Container
     
     # 2. Aplicación → Database (si existe)
     if db_container and app_containers:
-        # Conectar todos los contenedores de aplicación a la BD
-        for app in app_containers:
-            app_id = app["id"]
-            # Evitar duplicados para Odoo: solo el core se conecta directamente
-            if len(app_containers) > 1:
-                # En Odoo solo el Application Core se conecta a BD
-                if app_id == "app_core":
-                    diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/ORM")
+        modular_arch = analysis.get("modular_architecture", {})
+        
+        # FIX: En arquitecturas modulares, Framework Core es quien conecta a BD
+        if modular_arch.get("is_modular") and "framework_core" in [c["id"] for c in app_containers]:
+            diagram += f"""    Rel(framework_core, database, "Lee y escribe datos", "SQL/ORM")
 """
-            else:
-                # Para aplicaciones simples, todas se conectan
-                diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/JDBC")
+        else:
+            # Para aplicaciones tradicionales o multi-proceso
+            for app in app_containers:
+                app_id = app["id"]
+                # Evitar duplicados: solo el core se conecta directamente
+                if len(app_containers) > 1:
+                    if app_id == "app_core":
+                        diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/ORM")
+"""
+                else:
+                    # Aplicación simple
+                    diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/JDBC")
 """
     
     # 3. Aplicación → Cache (si existe)
