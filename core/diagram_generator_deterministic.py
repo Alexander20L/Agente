@@ -673,11 +673,18 @@ def _infer_business_domain(project_name, components, business_modules=None):
 
 
 def _detect_users_from_modules(business_modules, components):
-    """Detecta tipos de usuarios específicos desde los módulos del proyecto"""
+    """
+    Detecta tipos de usuarios/actores analizando:
+    1. Keywords en nombres de módulos/archivos
+    2. Clases en models/entities (herencia de User/Person/Actor)
+    3. Endpoints/rutas de API
+    """
     users = []
+    detected_names = set()
+    
+    # PASO 1: Keywords predefinidos (fallback)
     module_keywords = " ".join([m.get("keyword", "").lower() for m in business_modules])
     
-    # Detectar diferentes tipos de usuarios
     user_patterns = {
         "admin": ("admin", "Administrator", "Administra el sistema y gestiona configuración"),
         "customer": ("customer", "Customer/Client", "Usa los servicios principales del sistema"),
@@ -685,20 +692,101 @@ def _detect_users_from_modules(business_modules, components):
         "user": ("user", "User", "Usuario final del sistema"),
         "vendor": ("vendor", "Vendor/Supplier", "Proveedor de productos o servicios"),
         "manager": ("manager", "Manager", "Supervisa operaciones y aprueba transacciones"),
+        "driver": ("driver", "Driver", "Conductor del servicio"),
+        "passenger": ("passenger", "Passenger", "Pasajero del servicio"),
+        "patient": ("patient", "Patient", "Paciente del sistema médico"),
+        "doctor": ("doctor", "Doctor/Médico", "Profesional de la salud"),
+        "teacher": ("teacher", "Teacher/Profesor", "Educador del sistema"),
+        "student": ("student", "Student/Estudiante", "Estudiante del sistema"),
+        "buyer": ("buyer", "Buyer/Comprador", "Compra productos o servicios"),
+        "seller": ("seller", "Seller/Vendedor", "Vende productos o servicios"),
+        "guest": ("guest", "Guest/Invitado", "Usuario no autenticado"),
     }
     
-    detected = set()
-    for keyword, (user_id, user_name, user_desc) in user_patterns.items():
-        if keyword in module_keywords and keyword not in detected:
-            users.append({
-                "id": user_id,
-                "name": user_name,
-                "description": user_desc,
-                "action": "Gestiona" if keyword == "admin" else "Usa"
-            })
-            detected.add(keyword)
+    # PASO 2: Analizar componentes buscando actores potenciales
+    actor_candidates = _extract_actors_from_components(components)
     
-    return users[:2]  # Máximo 2 usuarios para no saturar el C1
+    # Agregar actores encontrados en el código
+    for actor in actor_candidates:
+        actor_name = actor["name"]
+        if actor_name not in detected_names:
+            users.append({
+                "id": actor["id"],
+                "name": actor["name"].title(),
+                "description": actor.get("description", f"Actor del sistema"),
+                "action": "Gestiona" if "admin" in actor_name.lower() else "Usa"
+            })
+            detected_names.add(actor_name)
+    
+    # Si no se encontraron actores en el código, usar keywords
+    if not users:
+        for keyword, (user_id, user_name, user_desc) in user_patterns.items():
+            if keyword in module_keywords and keyword not in detected_names:
+                users.append({
+                    "id": user_id,
+                    "name": user_name,
+                    "description": user_desc,
+                    "action": "Gestiona" if keyword == "admin" else "Usa"
+                })
+                detected_names.add(keyword)
+    
+    return users[:3]  # Máximo 3 usuarios para no saturar el C1
+
+
+def _extract_actors_from_components(components):
+    """
+    Extrae actores potenciales analizando nombres de componentes.
+    Busca patrones como: Driver, Passenger, Patient, Doctor, etc.
+    """
+    actors = []
+    seen = set()
+    
+    # Patrones de nombres que indican actores
+    actor_keywords = [
+        "driver", "passenger", "rider", "customer", "client", "user", 
+        "admin", "manager", "employee", "staff", "vendor", "supplier",
+        "patient", "doctor", "nurse", "physician", "dentist",
+        "teacher", "student", "professor", "instructor",
+        "buyer", "seller", "merchant", "trader",
+        "guest", "visitor", "member", "subscriber",
+        "owner", "tenant", "landlord", "agent", "broker"
+    ]
+    
+    for comp in components:
+        comp_name = comp.get("name", "").lower()
+        comp_type = comp.get("type", "")
+        
+        # Buscar en modelos/entidades (más probable que sean actores)
+        if comp_type in ["model", "entity"]:
+            for keyword in actor_keywords:
+                if keyword in comp_name and keyword not in seen:
+                    # Generar descripción contextual
+                    if "driver" in comp_name or "conductor" in comp_name:
+                        desc = "Conduce vehículos o realiza entregas"
+                    elif "passenger" in comp_name or "pasajero" in comp_name:
+                        desc = "Solicita y utiliza servicios de transporte"
+                    elif "patient" in comp_name:
+                        desc = "Recibe atención médica"
+                    elif "doctor" in comp_name or "medico" in comp_name:
+                        desc = "Proporciona atención médica"
+                    elif "teacher" in comp_name or "profesor" in comp_name:
+                        desc = "Imparte educación y gestiona cursos"
+                    elif "student" in comp_name or "estudiante" in comp_name:
+                        desc = "Recibe educación y participa en cursos"
+                    elif "admin" in comp_name:
+                        desc = "Administra el sistema y gestiona configuración"
+                    else:
+                        desc = f"Usuario del sistema con rol de {keyword}"
+                    
+                    actors.append({
+                        "id": keyword,
+                        "name": keyword.title(),
+                        "description": desc
+                    })
+                    seen.add(keyword)
+                    break
+    
+    return actors
 
 
 def _detect_external_systems(business_modules, components):
