@@ -995,7 +995,22 @@ C4Component
             for i, comp in enumerate(presentation_comps[:4]):  # Max 4 ejemplos
                 comp_name = comp.replace(".py", "").replace(".ui", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "Window/Dialog", "Componente visual")
+                
+                # Verificar si realmente es UI o es lógica mal clasificada
+                comp_data = next((c for c in components if c.get("name", "") == comp), None)
+                actual_type = comp_data.get("type", "view") if comp_data else "view"
+                
+                if actual_type == "view":
+                    diagram += f"""        Component({safe_name}, "{comp_name}", "Window/Dialog", "Componente visual")
+"""
+                elif actual_type == "service":
+                    diagram += f"""        Component({safe_name}, "{comp_name}", "Service", "Lógica de negocio")
+"""
+                elif actual_type == "controller":
+                    diagram += f"""        Component({safe_name}, "{comp_name}", "Controller", "Controlador")
+"""
+                else:
+                    diagram += f"""        Component({safe_name}, "{comp_name}", "Window/Dialog", "Componente visual")
 """
         elif is_mobile:
             diagram += """        Component(screens, "Pantallas", "Mobile", "Pantallas de la aplicación")

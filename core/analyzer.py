@@ -1829,8 +1829,8 @@ def detect_components(root_path: str):
     valid_ext = [".py", ".java", ".js", ".ts", ".cs", ".go", ".rs", ".php", ".rb", ".kt", ".swift"]
 
     name_patterns = {
-        "controller": re.compile(r".*(controller|resource|route|manager|handler|algorithm|genetic|simulation|simulator|endpoint|api).*", re.IGNORECASE),
-        "service":    re.compile(r".*(service|logic|engine|process|reporting|validation|export|usecase|interactor|facade).*", re.IGNORECASE),
+        "controller": re.compile(r".*(controller|resource|route|manager|handler|endpoint|api).*", re.IGNORECASE),
+        "service":    re.compile(r".*(service|logic|engine|process|reporting|validation|export|usecase|interactor|facade|algorithm|genetic|simulation|simulator).*", re.IGNORECASE),
         "repository": re.compile(r".*(repo|repository|dao|database|store|persistence).*", re.IGNORECASE),
         "model":      re.compile(r".*(model|entity|schema|dto|domain|aggregate).*", re.IGNORECASE),
         "view":       re.compile(r".*(view|widget|window|dialog|page|component|main_window|form|activity|fragment).*", re.IGNORECASE),
