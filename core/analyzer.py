@@ -866,6 +866,130 @@ def detect_actors(analysis_result: dict):
 
 
 # ================================================================
+#  MODULAR ARCHITECTURE DETECTION (NUEVO)
+# ================================================================
+
+def detect_modular_architecture(root_path: str, components: list) -> dict:
+    """
+    Detecta si el proyecto usa arquitectura modular.
+    
+    Retorna:
+        {
+            "is_modular": bool,
+            "architecture_type": str o None,
+            "modules": list,
+            "module_structure": str (descripción)
+        }
+    """
+    
+    # 1. ODOO/OPENERP - Módulos en addons/
+    addons_path = os.path.join(root_path, "addons")
+    if os.path.exists(addons_path) and os.path.isdir(addons_path):
+        modules = []
+        for item in os.listdir(addons_path):
+            module_path = os.path.join(addons_path, item)
+            if os.path.isdir(module_path):
+                # Verificar que tiene __manifest__.py o __openerp__.py (módulos Odoo)
+                has_manifest = os.path.exists(os.path.join(module_path, "__manifest__.py")) or \
+                              os.path.exists(os.path.join(module_path, "__openerp__.py"))
+                if has_manifest:
+                    modules.append({
+                        "name": item,
+                        "path": module_path,
+                        "type": "odoo-addon"
+                    })
+        
+        if len(modules) >= 2:
+            return {
+                "is_modular": True,
+                "architecture_type": "odoo-modules",
+                "modules": modules,
+                "module_structure": f"{len(modules)} módulos Odoo independientes en addons/"
+            }
+    
+    # 2. DJANGO - Múltiples apps con apps.py
+    apps_py_files = [c for c in components if c.get("name", "").lower() == "apps.py"]
+    if len(apps_py_files) >= 3:
+        # Extraer módulos Django
+        django_apps = []
+        for app_file in apps_py_files:
+            app_path = os.path.dirname(app_file["path"])
+            app_name = os.path.basename(app_path)
+            django_apps.append({
+                "name": app_name,
+                "path": app_path,
+                "type": "django-app"
+            })
+        
+        return {
+            "is_modular": True,
+            "architecture_type": "django-apps",
+            "modules": django_apps,
+            "module_structure": f"{len(django_apps)} Django apps independientes"
+        }
+    
+    # 3. NESTJS - Múltiples módulos TypeScript
+    module_ts_files = [c for c in components if c.get("name", "").lower().endswith(".module.ts")]
+    if len(module_ts_files) >= 3:
+        nest_modules = []
+        for mod_file in module_ts_files:
+            mod_name = mod_file["name"].replace(".module.ts", "")
+            nest_modules.append({
+                "name": mod_name,
+                "path": os.path.dirname(mod_file["path"]),
+                "type": "nestjs-module"
+            })
+        
+        return {
+            "is_modular": True,
+            "architecture_type": "nestjs-modules",
+            "modules": nest_modules,
+            "module_structure": f"{len(nest_modules)} módulos NestJS con decorador @Module()"
+        }
+    
+    # 4. MONOREPO - packages/ o services/
+    packages_path = os.path.join(root_path, "packages")
+    services_path = os.path.join(root_path, "services")
+    
+    monorepo_modules = []
+    if os.path.exists(packages_path) and os.path.isdir(packages_path):
+        for item in os.listdir(packages_path):
+            module_path = os.path.join(packages_path, item)
+            if os.path.isdir(module_path):
+                monorepo_modules.append({
+                    "name": item,
+                    "path": module_path,
+                    "type": "monorepo-package"
+                })
+    
+    if os.path.exists(services_path) and os.path.isdir(services_path):
+        for item in os.listdir(services_path):
+            module_path = os.path.join(services_path, item)
+            if os.path.isdir(module_path):
+                monorepo_modules.append({
+                    "name": item,
+                    "path": module_path,
+                    "type": "monorepo-service"
+                })
+    
+    if len(monorepo_modules) >= 2:
+        return {
+            "is_modular": True,
+            "architecture_type": "monorepo",
+            "modules": monorepo_modules,
+            "module_structure": f"{len(monorepo_modules)} paquetes/servicios en monorepo"
+        }
+    
+    # 5. NO MODULAR - Estructura tradicional por capas
+    return {
+        "is_modular": False,
+        "architecture_type": None,
+        "modules": [],
+        "module_structure": "Arquitectura por capas (MVC/Layered)"
+    }
+
+
+# ================================================================
 #  BUSINESS MODULES DETECTION (NUEVO)
 # ================================================================
 
@@ -1181,6 +1305,9 @@ def analyze_project(zip_path: str):
     
     # 6. NUEVO: Detectar módulos de negocio para C2 detallado
     result["business_modules"] = detect_business_modules(extract_dir)
+    
+    # 7. NUEVO: Detectar arquitectura modular (Odoo, Django, NestJS, Monorepo)
+    result["modular_architecture"] = detect_modular_architecture(extract_dir, component_data["components"])
 
     return result
 

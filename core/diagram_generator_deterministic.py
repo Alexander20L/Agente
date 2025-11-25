@@ -11,20 +11,31 @@ def _detect_containers(analysis):
     
     Contenedores = Aplicaciones/Procesos ejecutables, NO módulos internos
     Ejemplos: Desktop App, Web App, API Backend, Database, Cache, Message Queue
+    
+    NUEVO: Si el proyecto tiene arquitectura modular (Odoo addons, Django apps, etc.),
+    cada módulo se convierte en un contenedor independiente en C2.
     """
     containers = []
     project_type = analysis.get("project_type", "unknown")
     technologies = analysis.get("technologies", {})
     components = analysis.get("components_detected", [])
     
-    # 1. APLICACIÓN PRINCIPAL (Desktop, Web, Mobile, CLI, API)
-    main_container = _detect_main_application(project_type, technologies, components, analysis)
-    if main_container:
-        # Si es una lista (múltiples contenedores como Odoo), agregar todos
-        if isinstance(main_container, list):
-            containers.extend(main_container)
-        else:
-            containers.append(main_container)
+    # NUEVO: Verificar si es arquitectura modular
+    modular_arch = analysis.get("modular_architecture", {})
+    if modular_arch.get("is_modular"):
+        # Usar módulos como contenedores
+        module_containers = _detect_modular_containers(modular_arch, technologies)
+        if module_containers:
+            containers.extend(module_containers)
+    else:
+        # 1. APLICACIÓN PRINCIPAL (Desktop, Web, Mobile, CLI, API) - Arquitectura tradicional
+        main_container = _detect_main_application(project_type, technologies, components, analysis)
+        if main_container:
+            # Si es una lista (múltiples contenedores como Odoo), agregar todos
+            if isinstance(main_container, list):
+                containers.extend(main_container)
+            else:
+                containers.append(main_container)
     
     # 2. DATABASE
     db_container = _detect_database_container(technologies, components)
@@ -40,6 +51,82 @@ def _detect_containers(analysis):
     mq_container = _detect_message_queue_container(technologies, components)
     if mq_container:
         containers.append(mq_container)
+    
+    return containers
+
+
+def _detect_modular_containers(modular_arch, technologies):
+    """
+    Convierte módulos de negocio en contenedores para C2.
+    Cada módulo independiente (Odoo addon, Django app, NestJS module, etc.)
+    se muestra como un contenedor separado.
+    """
+    containers = []
+    arch_type = modular_arch.get("architecture_type")
+    modules = modular_arch.get("modules", [])
+    
+    # Mapeo de tipos de arquitectura a tecnologías
+    tech_map = {
+        "odoo-modules": "Python + Odoo Framework",
+        "django-apps": "Python + Django",
+        "nestjs-modules": "TypeScript + NestJS",
+        "monorepo": "Multi-language Monorepo"
+    }
+    
+    default_tech = tech_map.get(arch_type, "Application Module")
+    
+    # Limitar a 10 módulos para no saturar el diagrama
+    display_modules = modules[:10]
+    
+    for module in display_modules:
+        module_name = module.get("name", "Module")
+        module_type = module.get("type", "module")
+        
+        # Generar ID seguro para Mermaid
+        safe_id = module_name.lower().replace("-", "_").replace(".", "_").replace("/", "_")
+        
+        # Descripción específica según tipo
+        if module_type == "odoo-addon":
+            description = f"Módulo Odoo | Funcionalidad de negocio independiente"
+        elif module_type == "django-app":
+            description = f"Django App | Componente modular del sistema"
+        elif module_type == "nestjs-module":
+            description = f"NestJS Module | Módulo con inyección de dependencias"
+        elif module_type == "monorepo-package":
+            description = f"Package | Componente reutilizable del monorepo"
+        elif module_type == "monorepo-service":
+            description = f"Service | Microservicio independiente"
+        else:
+            description = f"Módulo de negocio independiente"
+        
+        containers.append({
+            "id": safe_id,
+            "name": module_name.title(),
+            "technology": default_tech,
+            "description": description,
+            "type": "application"
+        })
+    
+    # Si hay más de 10 módulos, agregar nota
+    if len(modules) > 10:
+        containers.append({
+            "id": "other_modules",
+            "name": f"Otros {len(modules) - 10} módulos",
+            "technology": default_tech,
+            "description": f"Módulos adicionales del sistema",
+            "type": "application"
+        })
+    
+    # Agregar Core Framework si es Odoo/Django
+    if arch_type in ["odoo-modules", "django-apps"]:
+        framework_name = "Odoo Core" if arch_type == "odoo-modules" else "Django Core"
+        containers.append({
+            "id": "framework_core",
+            "name": framework_name,
+            "technology": default_tech,
+            "description": f"Framework base | ORM | Routing | Security",
+            "type": "application"
+        })
     
     return containers
 
@@ -737,13 +824,15 @@ C4Container
         diagram += f"""    Rel(user, {app_id}, "{action}", "{tech}")
 """
     
-    # 1.5. Relaciones entre contenedores de aplicación (para proyectos como Odoo)
+    # 1.5. Relaciones entre contenedores de aplicación
     if len(app_containers) > 1:
-        # Detectar si es Odoo/OpenERP por los IDs de contenedores
+        # Detectar tipo de arquitectura
+        modular_arch = analysis.get("modular_architecture", {})
         container_ids = [c["id"] for c in app_containers]
-        is_odoo = "http_server" in container_ids and "app_core" in container_ids
+        is_odoo_multicontainer = "http_server" in container_ids and "app_core" in container_ids
         
-        if is_odoo:
+        if is_odoo_multicontainer:
+            # CASO 1: Odoo con múltiples procesos (HTTP, RPC, Core, Workers)
             # HTTP Server → Application Core
             if "http_server" in container_ids and "app_core" in container_ids:
                 diagram += f"""    Rel(http_server, app_core, "Invoca lógica de negocio", "Python API")
@@ -755,6 +844,21 @@ C4Container
             # Workers → Application Core
             if "workers" in container_ids and "app_core" in container_ids:
                 diagram += f"""    Rel(workers, app_core, "Ejecuta tareas programadas", "Internal API")
+"""
+        elif modular_arch.get("is_modular"):
+            # CASO 2: Arquitectura modular (Odoo addons, Django apps, etc.)
+            # Los módulos se comunican a través del Framework Core
+            if "framework_core" in container_ids:
+                # Módulos → Framework Core
+                for container in app_containers:
+                    if container["id"] != "framework_core" and container["id"] != "other_modules":
+                        diagram += f"""    Rel({container["id"]}, framework_core, "Usa servicios base", "Framework API")
+"""
+            else:
+                # Si no hay core, mostrar interdependencias entre primeros módulos
+                for i in range(min(3, len(app_containers) - 1)):
+                    for j in range(i + 1, min(4, len(app_containers))):
+                        diagram += f"""    Rel({app_containers[i]["id"]}, {app_containers[j]["id"]}, "Invoca funcionalidad", "Internal API")
 """
     
     # 2. Aplicación → Database (si existe)
