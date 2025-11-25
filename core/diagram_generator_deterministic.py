@@ -59,7 +59,8 @@ def _detect_main_application(project_type, technologies, components, analysis):
             "id": "web_app",
             "name": framework_name,
             "technology": all_tech or "Python + HTTP Server",
-            "description": f"Servidor web con {component_count} componentes | Arquitectura modular"
+            "description": f"Servidor web con {component_count} componentes | Arquitectura modular",
+            "type": "application"
         }
     
     # GUI Application (Desktop)
@@ -601,7 +602,7 @@ C4Container
 """
     
     # Agregar contenedores detectados (solo aplicaciones, no DB)
-    app_containers = [c for c in containers if c["type"] == "application"]
+    app_containers = [c for c in containers if c.get("type") == "application"]
     for container in app_containers:
         cont_id = container["id"]
         cont_name = container["name"]
@@ -615,7 +616,7 @@ C4Container
 """
     
     # Agregar base de datos fuera del boundary (si existe)
-    db_container = next((c for c in containers if c["type"] == "database"), None)
+    db_container = next((c for c in containers if c.get("type") == "database"), None)
     if db_container:
         db_tech = db_container["technology"]
         db_desc = db_container["description"]
