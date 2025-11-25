@@ -1748,19 +1748,23 @@ def detect_components(root_path: str):
                     break
             
             # 1.5) Odoo/OpenERP specific components (override patterns)
-            if "odoo" in root_path.lower():
+            # Detectar por ruta O por nombre de carpeta
+            is_odoo = ("odoo" in root_path.lower() or "openerp" in root_path.lower() or 
+                      "odoo" in dirpath.lower() or "openerp" in dirpath.lower())
+            
+            if is_odoo:
                 if file_lower == "api.py":
-                    comp_type = "utility"  # Decoradores, no controller
+                    comp_type = "utility"  # Decoradores (@api.model, @api.depends), no controller
                 elif file_lower == "fields.py":
-                    comp_type = "utility"  # Definiciones de tipos ORM
+                    comp_type = "utility"  # Definiciones de tipos ORM (Char, Integer, Many2one)
                 elif file_lower == "sql_db.py":
-                    comp_type = "repository"  # Abstracción de BD
+                    comp_type = "repository"  # Abstracción de BD PostgreSQL
                 elif file_lower == "http.py":
-                    comp_type = "controller"  # Maneja HTTP requests
+                    comp_type = "controller"  # Maneja HTTP requests/routing
                 elif file_lower == "models.py":
                     comp_type = "model"  # Modelo base ORM
-                elif file_lower in ["exceptions.py", "loglevels.py"]:
-                    comp_type = "utility"  # Utilities, not services
+                elif file_lower in ["exceptions.py", "loglevels.py", "populate.py"]:
+                    comp_type = "utility"  # Utilities/configuration, not services
 
             content = _read_text(file_path)
 

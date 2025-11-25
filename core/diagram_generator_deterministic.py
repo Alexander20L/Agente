@@ -918,7 +918,25 @@ C4Component
             for i, comp in enumerate(presentation_comps[:4]):
                 comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
                 safe_name = _make_safe_mermaid_id(comp)
-                diagram += f"""        Component({safe_name}, "{comp_name}", "Endpoint", "API REST")
+                
+                # Buscar el tipo real del componente desde el análisis
+                comp_type = "Endpoint"  # Default
+                comp_desc = "API REST"
+                for component in components:
+                    if component.get("name") == comp:
+                        detected_type = component.get("type", "").lower()
+                        if detected_type == "utility":
+                            comp_type = "Utility"
+                            comp_desc = "Utilidad/Configuración"
+                        elif detected_type == "controller":
+                            comp_type = "Controller"
+                            comp_desc = "Controlador HTTP"
+                        elif detected_type == "model":
+                            comp_type = "Model"
+                            comp_desc = "Modelo del dominio"
+                        break
+                
+                diagram += f"""        Component({safe_name}, "{comp_name}", "{comp_type}", "{comp_desc}")
 """
     
     # CAPA 2: Application/Business Logic Layer
@@ -944,7 +962,22 @@ C4Component
         for i, comp in enumerate(application_comps[:3]):  # Max 3 ejemplos
             comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Service", "Lógica de negocio")
+            
+            # Buscar tipo real del componente
+            comp_type = "Service"  # Default
+            comp_desc = "Lógica de negocio"
+            for component in components:
+                if component.get("name") == comp:
+                    detected_type = component.get("type", "").lower()
+                    if detected_type == "utility":
+                        comp_type = "Utility"
+                        comp_desc = "Utilidad/Configuración"
+                    elif detected_type == "repository":
+                        comp_type = "Repository"
+                        comp_desc = "Acceso a datos"
+                    break
+            
+            diagram += f"""        Component({safe_name}, "{comp_name}", "{comp_type}", "{comp_desc}")
 """
     
     # CAPA 3: Domain Layer (Entities/Models)
@@ -962,7 +995,28 @@ C4Component
         for i, comp in enumerate(domain_comps[:3]):
             comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Entity", "Entidad")
+            
+            # Buscar tipo real del componente
+            comp_type = "Entity"  # Default
+            comp_desc = "Entidad"
+            pattern_info = ""
+            for component in components:
+                if component.get("name") == comp:
+                    detected_type = component.get("type", "").lower()
+                    pattern = component.get("pattern")
+                    if detected_type == "model":
+                        comp_type = "Model"
+                        if pattern == "Active Record":
+                            comp_desc = "Modelo (Active Record)"
+                            pattern_info = " | Patrón: Active Record"
+                        else:
+                            comp_desc = "Modelo del dominio"
+                    elif detected_type == "utility":
+                        comp_type = "Utility"
+                        comp_desc = "Utilidad"
+                    break
+            
+            diagram += f"""        Component({safe_name}, "{comp_name}", "{comp_type}", "{comp_desc}{pattern_info}")
 """
     
     # CAPA 4: Infrastructure/Data Access Layer
@@ -980,7 +1034,22 @@ C4Component
         for i, comp in enumerate(infra_comps[:3]):
             comp_name = comp.replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Repository", "Repositorio")
+            
+            # Buscar tipo real del componente
+            comp_type = "Repository"  # Default
+            comp_desc = "Repositorio"
+            for component in components:
+                if component.get("name") == comp:
+                    detected_type = component.get("type", "").lower()
+                    if detected_type == "utility":
+                        comp_type = "Utility"
+                        comp_desc = "Utilidad"
+                    elif detected_type == "service":
+                        comp_type = "Service"
+                        comp_desc = "Servicio"
+                    break
+            
+            diagram += f"""        Component({safe_name}, "{comp_name}", "{comp_type}", "{comp_desc}")
 """
     
     # Fallback si no hay capas detectadas
@@ -991,7 +1060,30 @@ C4Component
         for comp in components[:4]:
             comp_name = comp.get("name", "component").replace(".java", "").replace(".py", "").replace(".js", "").replace(".ts", "")
             safe_name = _make_safe_mermaid_id(comp_name)
-            diagram += f"""        Component({safe_name}, "{comp_name}", "Component", "Módulo")
+            
+            # Usar el tipo real del componente detectado
+            comp_type = comp.get("type", "component").capitalize()
+            comp_desc = "Módulo"
+            pattern = comp.get("pattern")
+            
+            # Descripciones específicas según tipo
+            if comp_type.lower() == "utility":
+                comp_desc = "Utilidad/Configuración"
+            elif comp_type.lower() == "controller":
+                comp_desc = "Controlador HTTP"
+            elif comp_type.lower() == "service":
+                comp_desc = "Servicio de negocio"
+            elif comp_type.lower() == "repository":
+                comp_desc = "Acceso a datos"
+            elif comp_type.lower() == "model":
+                if pattern == "Active Record":
+                    comp_desc = "Modelo (Active Record)"
+                else:
+                    comp_desc = "Modelo del dominio"
+            elif comp_type.lower() == "view":
+                comp_desc = "Interfaz gráfica"
+            
+            diagram += f"""        Component({safe_name}, "{comp_name}", "{comp_type}", "{comp_desc}")
 """
     
     diagram += """    }
