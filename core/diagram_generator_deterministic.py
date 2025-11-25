@@ -79,15 +79,29 @@ def _detect_modular_containers(modular_arch, technologies):
     priority_names = ["sale", "account", "crm", "inventory", "purchase", "stock", 
                      "product", "mrp", "hr", "website", "admin", "auth", "users"]
     
-    # Ordenar módulos: primero prioritarios, luego el resto
+    # Ordenar módulos: primero exactos, luego que empiecen con el nombre, resto al final
     sorted_modules = []
     remaining_modules = modules.copy()
     
     for priority in priority_names:
+        # 1. Buscar módulo con nombre EXACTO
         for module in modules:
-            if priority in module["name"].lower() and module not in sorted_modules:
+            module_name = module["name"].lower()
+            if module_name == priority and module not in sorted_modules:
                 sorted_modules.append(module)
-                remaining_modules.remove(module)
+                if module in remaining_modules:
+                    remaining_modules.remove(module)
+        
+        # 2. Si no hay exacto, buscar que EMPIECE con el nombre (sin guiones bajos después)
+        if not any(m["name"].lower() == priority for m in sorted_modules):
+            for module in modules:
+                module_name = module["name"].lower()
+                # Buscar "sale" pero NO "sale_mrp" (prefiere módulos base)
+                if module_name.startswith(priority) and "_" not in module_name and module not in sorted_modules:
+                    sorted_modules.append(module)
+                    if module in remaining_modules:
+                        remaining_modules.remove(module)
+                    break
     
     # Agregar módulos restantes
     sorted_modules.extend(remaining_modules)
@@ -972,9 +986,16 @@ def generate_c3_diagram(analysis):
             # Priorizar módulos con más archivos o nombres importantes
             priority_names = ["sale", "account", "crm", "inventory", "purchase", "stock", "product", "admin", "auth"]
             
-            # Buscar módulo prioritario
+            # Buscar módulo prioritario - EXACTO primero, luego que empiece con el nombre
             for priority in priority_names:
-                selected = next((m for m in modules if priority in m["name"].lower()), None)
+                # 1. Buscar módulo con nombre EXACTO
+                selected = next((m for m in modules if m["name"].lower() == priority), None)
+                if selected:
+                    selected_module = selected
+                    break
+                
+                # 2. Si no hay exacto, buscar que EMPIECE con el nombre (sin guiones bajos)
+                selected = next((m for m in modules if m["name"].lower().startswith(priority) and "_" not in m["name"]), None)
                 if selected:
                     selected_module = selected
                     break
@@ -992,6 +1013,21 @@ def generate_c3_diagram(analysis):
                     c for c in components 
                     if module_path in c.get("path", "")
                 ]
+                
+                # Si el módulo seleccionado tiene muy pocos componentes (<5), buscar otro
+                if len(filtered_components) < 5:
+                    # Buscar módulo con más componentes
+                    for module in modules:
+                        if module != selected_module:
+                            test_path = module.get("path", "")
+                            test_comps = [c for c in components if test_path in c.get("path", "")]
+                            if len(test_comps) >= 5:
+                                selected_module = module
+                                module_path = test_path
+                                container_name = module.get("name", container_name).title()
+                                filtered_components = test_comps
+                                break
+                
                 components = filtered_components if filtered_components else components
     
     # Detectar patrón principal
