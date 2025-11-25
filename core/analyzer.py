@@ -1892,6 +1892,15 @@ def detect_components(root_path: str):
                     comp_type = "model"  # Modelo base ORM
                 elif file_lower in ["exceptions.py", "loglevels.py", "populate.py"]:
                     comp_type = "utility"  # Utilities/configuration, not services
+                # Framework/CLI utilities (NO son controllers ni services)
+                elif file_lower in ["migration.py", "module.py", "registry.py", "release.py"]:
+                    comp_type = "utility"  # Framework core utilities
+                elif file_lower in ["command.py", "deploy.py", "scaffold.py", "server.py"]:
+                    comp_type = "utility"  # CLI tools, not business services
+                elif file_lower in ["setup.py", "conf.py", "config.py", "loading.py"]:
+                    comp_type = "utility"  # Setup/configuration utilities
+                elif file_lower in ["cloc.py", "profiler.py", "report.py"]:
+                    comp_type = "utility"  # Development/debug tools
 
             content = _read_text(file_path)
 

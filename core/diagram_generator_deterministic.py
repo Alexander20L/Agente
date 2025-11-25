@@ -943,6 +943,40 @@ def generate_c3_diagram(analysis):
     container_name = main_container["name"]
     container_tech = main_container["technology"]
     
+    # NUEVO: Detectar si es arquitectura modular y filtrar por módulo
+    modular_arch = analysis.get("modular_architecture", {})
+    selected_module = None
+    module_path = None
+    
+    if modular_arch.get("is_modular"):
+        # Seleccionar un módulo representativo para C3
+        modules = modular_arch.get("modules", [])
+        if modules:
+            # Priorizar módulos con más archivos o nombres importantes
+            priority_names = ["sale", "account", "crm", "inventory", "purchase", "stock", "product", "admin", "auth"]
+            
+            # Buscar módulo prioritario
+            for priority in priority_names:
+                selected = next((m for m in modules if priority in m["name"].lower()), None)
+                if selected:
+                    selected_module = selected
+                    break
+            
+            # Si no hay prioritario, usar el primero
+            if not selected_module:
+                selected_module = modules[0]
+            
+            module_path = selected_module.get("path", "")
+            container_name = selected_module.get("name", container_name).title()
+            
+            # Filtrar componentes para mostrar solo los del módulo seleccionado
+            if module_path:
+                filtered_components = [
+                    c for c in components 
+                    if module_path in c.get("path", "")
+                ]
+                components = filtered_components if filtered_components else components
+    
     # Detectar patrón principal
     main_pattern = "Layered Architecture"
     if patterns:
@@ -968,6 +1002,14 @@ C4Component
     if layers.get("presentation", {}).get("count", 0) > 0:
         has_components = True
         all_pres = layers["presentation"]["components"]
+        
+        # NUEVO: Filtrar por módulo si es arquitectura modular
+        if module_path:
+            all_pres = [
+                c for c in all_pres 
+                if any(comp.get("path", "").startswith(module_path) and comp.get("name") == c 
+                      for comp in components)
+            ]
         
         # Filtrar tests y duplicados
         filtered = [c for c in all_pres if "test" not in c.lower()]
@@ -1064,6 +1106,14 @@ C4Component
         has_components = True
         all_app = layers["application"]["components"]
         
+        # NUEVO: Filtrar por módulo si es arquitectura modular
+        if module_path:
+            all_app = [
+                c for c in all_app 
+                if any(comp.get("path", "").startswith(module_path) and comp.get("name") == c 
+                      for comp in components)
+            ]
+        
         # Filtrar tests, config, main
         exclude = ["test", "main", "config", "application"]
         filtered = [c for c in all_app if not any(e in c.lower() for e in exclude)]
@@ -1105,6 +1155,14 @@ C4Component
         has_components = True
         all_domain = layers["domain"]["components"]
         
+        # NUEVO: Filtrar por módulo si es arquitectura modular
+        if module_path:
+            all_domain = [
+                c for c in all_domain 
+                if any(comp.get("path", "").startswith(module_path) and comp.get("name") == c 
+                      for comp in components)
+            ]
+        
         filtered = list(set(all_domain))[:comp_limit_per_layer]
         domain_comps = filtered
         
@@ -1143,6 +1201,14 @@ C4Component
     if layers.get("infrastructure", {}).get("count", 0) > 0:
         has_components = True
         all_infra = layers["infrastructure"]["components"]
+        
+        # NUEVO: Filtrar por módulo si es arquitectura modular
+        if module_path:
+            all_infra = [
+                c for c in all_infra 
+                if any(comp.get("path", "").startswith(module_path) and comp.get("name") == c 
+                      for comp in components)
+            ]
         
         filtered = list(set(all_infra))[:comp_limit_per_layer]
         infra_comps = filtered
