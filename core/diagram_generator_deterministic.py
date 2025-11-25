@@ -20,7 +20,11 @@ def _detect_containers(analysis):
     # 1. APLICACIÓN PRINCIPAL (Desktop, Web, Mobile, CLI, API)
     main_container = _detect_main_application(project_type, technologies, components, analysis)
     if main_container:
-        containers.append(main_container)
+        # Si es una lista (múltiples contenedores como Odoo), agregar todos
+        if isinstance(main_container, list):
+            containers.extend(main_container)
+        else:
+            containers.append(main_container)
     
     # 2. DATABASE
     db_container = _detect_database_container(technologies, components)
@@ -40,6 +44,73 @@ def _detect_containers(analysis):
     return containers
 
 
+def _detect_odoo_containers(analysis, components, component_count):
+    """
+    Detecta contenedores específicos de Odoo/OpenERP.
+    Odoo tiene múltiples servicios/procesos que deben mostrarse como contenedores separados.
+    """
+    containers = []
+    
+    # Detectar componentes clave de Odoo
+    component_names = [c.get("name", "").lower() for c in components if isinstance(c, dict)]
+    has_http = any("http" in name for name in component_names)
+    has_models = any("model" in name for name in component_names)
+    has_api = any("api" in name for name in component_names)
+    has_service = any("service" in name for name in component_names)
+    
+    # 1. HTTP Server (Frontend/Web Interface)
+    if has_http:
+        containers.append({
+            "id": "http_server",
+            "name": "HTTP Server",
+            "technology": "Python + Werkzeug",
+            "description": "Servidor web principal | Interfaz de usuario web",
+            "type": "application"
+        })
+    
+    # 2. RPC Server (API Backend)
+    if has_api:
+        containers.append({
+            "id": "rpc_server",
+            "name": "RPC Server",
+            "technology": "XML-RPC/JSON-RPC",
+            "description": "Servidor de APIs | Servicios web externos",
+            "type": "application"
+        })
+    
+    # 3. Application Core (Business Logic)
+    if has_models or has_service:
+        containers.append({
+            "id": "app_core",
+            "name": "Application Core",
+            "technology": "Python + ORM",
+            "description": f"Núcleo de negocio | {component_count} módulos | Lógica ERP/CRM",
+            "type": "application"
+        })
+    
+    # 4. Background Workers (Cron/Jobs)
+    if has_service:
+        containers.append({
+            "id": "workers",
+            "name": "Background Workers",
+            "technology": "Python + Cron",
+            "description": "Tareas programadas | Procesamiento asíncrono",
+            "type": "application"
+        })
+    
+    # Si no se detectaron contenedores específicos, retornar uno genérico
+    if not containers:
+        containers.append({
+            "id": "web_app",
+            "name": "Web Application Server",
+            "technology": "Python + HTTP Server",
+            "description": f"Servidor web con {component_count} componentes | Arquitectura modular",
+            "type": "application"
+        })
+    
+    return containers
+
+
 def _detect_main_application(project_type, technologies, components, analysis):
     """Detecta el contenedor de aplicación principal"""
     frontend_tech = technologies.get("frontend", [])
@@ -51,13 +122,16 @@ def _detect_main_application(project_type, technologies, components, analysis):
     
     # Web Framework (e.g., Odoo, Django, FastAPI framework itself)
     if project_type == "web-framework":
-        framework_name = "Web Application"
-        if "odoo" in analysis.get("project_name", "").lower():
-            framework_name = "Web Application Server"
+        project_name = analysis.get("project_name", "").lower()
         
+        # Odoo/OpenERP: Sistema complejo con múltiples contenedores
+        if "odoo" in project_name or "openerp" in project_name:
+            return _detect_odoo_containers(analysis, components, component_count)
+        
+        # Otros frameworks: contenedor único
         return {
             "id": "web_app",
-            "name": framework_name,
+            "name": "Web Application",
             "technology": all_tech or "Python + HTTP Server",
             "description": f"Servidor web con {component_count} componentes | Arquitectura modular",
             "type": "application"
@@ -663,11 +737,40 @@ C4Container
         diagram += f"""    Rel(user, {app_id}, "{action}", "{tech}")
 """
     
+    # 1.5. Relaciones entre contenedores de aplicación (para proyectos como Odoo)
+    if len(app_containers) > 1:
+        # Detectar si es Odoo/OpenERP por los IDs de contenedores
+        container_ids = [c["id"] for c in app_containers]
+        is_odoo = "http_server" in container_ids and "app_core" in container_ids
+        
+        if is_odoo:
+            # HTTP Server → Application Core
+            if "http_server" in container_ids and "app_core" in container_ids:
+                diagram += f"""    Rel(http_server, app_core, "Invoca lógica de negocio", "Python API")
+"""
+            # RPC Server → Application Core
+            if "rpc_server" in container_ids and "app_core" in container_ids:
+                diagram += f"""    Rel(rpc_server, app_core, "Ejecuta operaciones", "RPC")
+"""
+            # Workers → Application Core
+            if "workers" in container_ids and "app_core" in container_ids:
+                diagram += f"""    Rel(workers, app_core, "Ejecuta tareas programadas", "Internal API")
+"""
+    
     # 2. Aplicación → Database (si existe)
     if db_container and app_containers:
+        # Conectar todos los contenedores de aplicación a la BD
         for app in app_containers:
             app_id = app["id"]
-            diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/JDBC")
+            # Evitar duplicados para Odoo: solo el core se conecta directamente
+            if len(app_containers) > 1:
+                # En Odoo solo el Application Core se conecta a BD
+                if app_id == "app_core":
+                    diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/ORM")
+"""
+            else:
+                # Para aplicaciones simples, todas se conectan
+                diagram += f"""    Rel({app_id}, database, "Lee y escribe datos", "SQL/JDBC")
 """
     
     # 3. Aplicación → Cache (si existe)
